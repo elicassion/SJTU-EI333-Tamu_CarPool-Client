@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ultron.tamu_carpool"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="21" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+     
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <android:uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <android:uses-permission android:name="android.permission.READ_CALL_LOG" />
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/demo_title">
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="3b387ca7f00f9f17fb0a79db1a88d9d2" />
+
+        <!--
+     在android4.0以上系统中的 Activity加上下面这句，可以支持地图横竖屏切换
+     android:configChanges="orientation|keyboardHidden|screenSize"
+                           例如：
+     <activity
+        android:name=".basic.BasicMapActivity"
+        android:label="@string/basic_map"
+        android:configChanges="orientation|keyboardHidden|screenSize" />
+        -->
+
+
+        <!-- //<activity android:name=".MainActivity" /> -->
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/maintitle"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
+        <service android:name="com.amap.api.location.APSService" />
+
+        <activity
+            android:name=".login.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ctrlcenter.CtrlCenterActivity"
+            android:label="@string/title_activity_ctrl_center"
+            android:theme="@style/AppTheme.NoActionBar">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+        </activity>
+        <activity
+            android:name=".order.OrderMainActivity"
+            android:label="@string/title_activity_order_main"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".order.OrderDetailActivity"
+            android:label="@string/title_activity_order_detail"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".pay.PayActivity" />
+        <activity android:name=".comment.CommentActivity" />
+        <activity
+            android:name=".personalinfo.PersonalInfoActivity"
+            android:label="@string/title_activity_personal_info"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".search.SearchActivity" />
+        <activity
+            android:name=".match.MatchDetailActivity"
+            android:label="@string/title_activity_match_detail"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+    </application>
+
+</manifest>
