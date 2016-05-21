@@ -36,7 +36,7 @@
             android:layout_marginLeft="5.0dip"
             android:hint="请输入城市"
             android:textColorHint="@color/darkgrey"
-            android:text="北京"
+            android:text="上海"
             android:background="@drawable/text_search"
             android:imeOptions="actionDone"
             android:singleLine="true"

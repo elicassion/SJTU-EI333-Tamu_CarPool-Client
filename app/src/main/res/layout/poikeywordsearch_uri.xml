@@ -12,6 +12,7 @@
         android:layout_alignParentTop="true"
         android:textColor="@android:color/black" />
 
+
     <TextView
         android:id="@+id/snippet"
         android:layout_width="200dip"
@@ -21,6 +22,7 @@
         android:layout_below="@id/title"
         android:textColor="@android:color/black" />
 
+    <!--TODO:change this image-->
     <ImageButton
         android:id="@+id/start_amap_app"
         android:layout_width="wrap_content"

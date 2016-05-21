@@ -49,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
                 user = new CarOwner(userType, id, null, state, max_psg);
             }
             Intent intentCtrlCenter = new Intent(MainActivity.this, CtrlCenterActivity.class);
-
+            //TODO: relay user info
+            
             startActivity(intentCtrlCenter);
         }
     }

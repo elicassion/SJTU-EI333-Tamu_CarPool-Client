@@ -13,4 +13,6 @@ public class User {
     protected int mState;
 
     public User(){}
+    //TODO: using string information to initialize
+    //TODO: get information into strings
 }
