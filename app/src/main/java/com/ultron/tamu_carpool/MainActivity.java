@@ -26,7 +26,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        try {
 
+            Thread.sleep(1000);
+
+        } catch (InterruptedException e) { }
         Intent intentlogin = new Intent(MainActivity.this,LoginActivity.class);
         startActivityForResult(intentlogin, 1);
         //startActivity(new Intent(MainActivity.this,LoginActivity.class));
@@ -42,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             int state = data.getIntExtra("state", 0);
             String id = data.getStringExtra("id");
             if(userType == 1){
-                //user = new Passenger(userType, id, null, state);
+                user = new Passenger(userType, id, null, state);
             }
             else{
                 int max_psg = Integer.parseInt(data.getStringExtra("maxpsg"));
@@ -50,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             }
             Intent intentCtrlCenter = new Intent(MainActivity.this, CtrlCenterActivity.class);
             //TODO: relay user info
-            
+
             startActivity(intentCtrlCenter);
         }
     }

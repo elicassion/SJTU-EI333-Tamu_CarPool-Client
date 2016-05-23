@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.ultron.tamu_carpool.route.MatchDetailActivity">
+    tools:context="com.ultron.tamu_carpool.match.MatchDetailActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -32,7 +32,36 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_match_detail" />
+    <TextView
+        android:id="@+id/route_info"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginBottom="3dp"
+        android:background="#ffffff"
+        android:gravity="center_vertical"
+        android:textColor="#000000" />
+
+    <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:id = "@+id/match_detail_scroll">
+        <LinearLayout
+            android:id="@+id/match_detail_select"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:background="#ffffff"
+            android:orientation="vertical"
+            android:padding="3dp" >
+        </LinearLayout>
+
+        <!--TODO:generate several component with info according to the number of match detail-->
+        <!--<include layout="@layout/content_match_detail" />-->
+    </android.support.v4.widget.NestedScrollView>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

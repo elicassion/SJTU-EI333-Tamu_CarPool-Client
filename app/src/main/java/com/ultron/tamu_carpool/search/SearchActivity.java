@@ -86,6 +86,7 @@ public class SearchActivity extends FragmentActivity implements
     private LatLonPoint mEndPoint = new LatLonPoint(31.666667, 121.23333);//终点，
     private LatLng startPosition = AMapUtil.convertToLatLng(mStartPoint);
     private LatLng destPosition = AMapUtil.convertToLatLng(mEndPoint);
+    private String destName;
 
 
     private OnLocationChangedListener mListener;
@@ -195,6 +196,7 @@ public class SearchActivity extends FragmentActivity implements
         Intent matchIntent = new Intent(SearchActivity.this, MatchDetailActivity.class);
         //TODO: ask service for more info then send them;
         matchIntent.putExtra("drive_route_result", mDriveRouteResult);
+        matchIntent.putExtra("destination", destName);
         startActivity(matchIntent);
     }
 
@@ -274,6 +276,7 @@ public class SearchActivity extends FragmentActivity implements
      */
     private void setDestination(Marker marker) {
         destPosition = marker.getPosition();
+        destName = marker.getTitle();
         mEndPoint = new LatLonPoint(destPosition.latitude, destPosition.longitude);
         aMap.clear();
         aMap.addMarker(new MarkerOptions()
