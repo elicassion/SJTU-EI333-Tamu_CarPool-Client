@@ -42,7 +42,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
         CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         toolBarLayout.setTitle(getTitle());
 
-        //TODO:generate several component with info according to the number of match detail
+        //TODO:Add time option:realtime or appointment
 
         //TODO:辣鸡button 可以脑洞改
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -140,6 +140,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     }
 
     public void showMoreInfo(int selectedUserNumber){
+        //TODO: link MatchUnitInfoActivity
         ToastUtil.show(MatchDetailActivity.this, "你戳我老" + Integer.toString(selectedUserNumber) + "?!");
     }
 }
