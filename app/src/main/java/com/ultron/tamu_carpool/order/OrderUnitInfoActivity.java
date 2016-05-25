@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.style.LeadingMarginSpan;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,7 +17,7 @@ import com.ultron.tamu_carpool.util.ToastUtil;
 
 public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnClickListener{
     private TextView mUnitDetail;
-    private TextView mUnitGoText;
+    private Button mUnitGoBtn;
     private LinearLayout mUnitGo;
     private int mOrderType;
     private String mOrderInfo;
@@ -38,22 +39,22 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
 
     public void initView() {
         mUnitDetail = (TextView) findViewById(R.id.order_unit_info_detail);
-        mUnitGoText = (TextView) findViewById(R.id.order_unit_go_text);
+        mUnitGoBtn = (Button) findViewById(R.id.order_unit_go_btn);
         mUnitGo = (LinearLayout) findViewById(R.id.order_unit_go);
-        mUnitGo.setOnClickListener(this);
+        mUnitGoBtn.setOnClickListener(this);
 
         getInfoFromExtra();
 
         mUnitDetail.setText(mOrderInfo);
         switch (mOrderType){
             case 1:
-                mUnitGoText.setText("去匹配");
+                mUnitGoBtn.setText("去匹配");
                 break;
             case 2:
-                mUnitGoText.setText("确认到达");
+                mUnitGoBtn.setText("确认到达");
                 break;
             case 3:
-                mUnitGoText.setText("去评价");
+                mUnitGoBtn.setText("去评价");
                 break;
         }
 
@@ -68,7 +69,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.order_unit_go:
+            case R.id.order_unit_go_btn:
                 //TODO: link to activity
                 switch (mOrderType){
                     case 1:
