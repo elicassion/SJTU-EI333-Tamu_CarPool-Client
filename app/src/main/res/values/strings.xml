@@ -261,5 +261,7 @@
     </string>
     <string name="title_activity_oo">oo</string>
     <string name="title_activity_match_detail">MatchDetailActivity</string>
+    <string name="title_activity_sb">sb</string>
+    <string name="title_activity_order_unit_info">OrderUnitInfoActivity</string>
 
 </resources>

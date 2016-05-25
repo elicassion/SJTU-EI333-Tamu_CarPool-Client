@@ -97,7 +97,15 @@
             android:name=".match.MatchDetailActivity"
             android:label="@string/title_activity_match_detail"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".match.MatchUnitInfoActivity"></activity>
+        <activity android:name=".match.MatchUnitInfoActivity" />
+        <activity
+            android:name=".sb"
+            android:label="@string/title_activity_sb"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".order.OrderUnitInfoActivity"
+            android:label="@string/title_activity_order_unit_info"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

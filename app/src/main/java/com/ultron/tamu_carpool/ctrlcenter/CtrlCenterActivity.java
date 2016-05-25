@@ -16,6 +16,7 @@ import com.ultron.tamu_carpool.search.SearchActivity;
 public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
 {
     @SuppressWarnings("unused")
+    private String mUserId = "18217209315";
     private LinearLayout body;
 
     //TODO: modify them to self-indicated names
@@ -69,23 +70,29 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
         switch (flag) {
             case 0:
                 body.removeAllViews();
+                Intent intentSearch = new Intent(CtrlCenterActivity.this, SearchActivity.class);
+                intentSearch.putExtra("id", mUserId);
                 View v = getLocalActivityManager().startActivity("one",
-                        new Intent(CtrlCenterActivity.this, SearchActivity.class)).getDecorView();
+                        intentSearch).getDecorView();
 
                 one.setImageResource(R.drawable.tab_weixin_pressed);
                 body.addView(v);
                 break;
             case 1:
                 body.removeAllViews();
+                Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
+                intentOrderMain.putExtra("id", mUserId);
                 body.addView(getLocalActivityManager().startActivity("two",
-                        new Intent(CtrlCenterActivity.this, OrderMainActivity.class))
+                        intentOrderMain)
                         .getDecorView());
                 two.setImageResource(R.drawable.tab_find_frd_pressed);
                 break;
             case 2:
                 body.removeAllViews();
+                Intent intentPersonalInfo = new Intent(CtrlCenterActivity.this, PersonalInfoActivity.class);
+                intentPersonalInfo.putExtra("id", mUserId);
                 body.addView(getLocalActivityManager().startActivity(
-                        "three", new Intent(CtrlCenterActivity.this, PersonalInfoActivity.class))
+                        "three", intentPersonalInfo)
                         .getDecorView());
                 three.setImageResource(R.drawable.tab_address_pressed);
                 break;

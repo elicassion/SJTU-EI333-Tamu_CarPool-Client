@@ -116,11 +116,14 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
                 String phoneNumber = jUser.getString("phone");
                 int reputationStars = jUser.getInt("repu");
                 userDetail = "电话: " + phoneNumber + "\n" + "评价: " + Integer.toString(reputationStars) + "星";
+
                 final LinearLayout linearLayout = new LinearLayout(this);
                 View.inflate(this, R.layout.content_match_detail, linearLayout);
                 final View view = linearLayout.getChildAt(0);
                 view.setTag(i+1);
                 view.setOnClickListener(this);
+                linearLayout.setClickable(true);
+                linearLayout.setFocusable(true);
 
                 final TextView mTextView = (TextView) linearLayout.findViewById(R.id.match_detail_text);
                 mTextView.setText(userDetail);
