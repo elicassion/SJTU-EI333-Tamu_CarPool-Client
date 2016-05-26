@@ -294,6 +294,7 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
         protected Boolean doInBackground(Void... params) {
             // TODO: link service to check id and password
 
+
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
@@ -316,7 +317,7 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            showProgress(false);
+            //showProgress(false);
 
             if (success) {
                 //writeFile(getString(R.string.user_idps_file_name), mEmail+mPassword);
@@ -330,8 +331,10 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
                 data.putExtra("state", mState);
                 data.putExtra("maxpsg", 2);
                 setResult(2,data);
+                //showProgress(false);
                 finish();
             } else {
+                showProgress(false);
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
@@ -343,18 +346,6 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
             showProgress(false);
         }
 
-        public void writeFile(String filePath,String f){
-            FileWriter fw;
-            try {
-                fw = new FileWriter(filePath);
-                fw.write(f);
-                fw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-        }
     }
 }
 

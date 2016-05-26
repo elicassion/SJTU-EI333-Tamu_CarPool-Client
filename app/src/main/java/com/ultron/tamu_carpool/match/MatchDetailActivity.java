@@ -1,6 +1,13 @@
 package com.ultron.tamu_carpool.match;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -10,10 +17,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amap.api.services.route.DriveRouteResult;
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.util.InteractUtil;
 import com.ultron.tamu_carpool.util.ToastUtil;
 
 import org.json.JSONArray;
@@ -21,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.sql.Time;
 import java.util.List;
 
 public class MatchDetailActivity extends AppCompatActivity implements View.OnClickListener{
@@ -28,16 +39,24 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     private DriveRouteResult mDriveRouteResult;
     private String mDestName;
     private TextView mRouteInfo;
+    private ProgressBar mProgressView;
+    private Context mContext;
 
     private String mMatchResult;
     private JSONArray mJResult;
     private ViewGroup mDetailsView;
+    private Toolbar toolbar;
+
+    private int mPoolType;
+    private Time mTime;
+
+    private MatchTask mMatchTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_match_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         toolBarLayout.setTitle(getTitle());
@@ -56,8 +75,11 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
 
 
         mDetailsView = (ViewGroup)findViewById(R.id.match_detail_select);
+        mProgressView = (ProgressBar)findViewById(R.id.progress);
+        mRouteInfo = (TextView) findViewById(R.id.route_info);
 
         getDriveRouteResultFromSearch();
+        showProgress(true);
         beginMatch();
     }
 
@@ -66,7 +88,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
         Intent intent = getIntent();
         mDriveRouteResult = (DriveRouteResult) intent.getSerializableExtra("drive_route_result");
         mDestName = intent.getStringExtra("destination");
-        mRouteInfo = (TextView) findViewById(R.id.route_info);
+
         mRouteInfo.setText("去往: " + mDestName);
 
     }
@@ -77,36 +99,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
 
         //TODO: receive messeges
         //This is DUMMY
-        mMatchResult = "{" +
-                       "    \"users\" : "+
-                                         "["+
-                                         "{"+
-                                         "  \"phone\" : \"18217209315\","+
-                                         "  \"repu\" : 5"+
-                                         "},"+
-                                         "{"+
-                                         "  \"phone\" : \"11111111111\","+
-                                         "  \"repu\" : 1"+
-                                         "},"+
-                                        "{"+
-                                        "  \"phone\" : \"22222222222\","+
-                                        "  \"repu\" : 2"+
-                                        "},"+
-                                        "{"+
-                                        "  \"phone\" : \"33333333333\","+
-                                        "  \"repu\" : 3"+
-                                        "},"+
-                                        "{"+
-                                        "  \"phone\" : \"44444444444\","+
-                                        "  \"repu\" : 4"+
-                                        "},"+
-                                        "{"+
-                                        "  \"phone\" : \"00000000000\","+
-                                        "  \"repu\" : 0"+
-                                        "}"+
-                                        "]"+
-                       "}";
-
+        mMatchTask = new MatchTask(mDriveRouteResult, mPoolType, mTime);
 
         try {
             mJResult = new JSONObject(mMatchResult).getJSONArray("users");
@@ -145,5 +138,77 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     public void showMoreInfo(int selectedUserNumber){
         //TODO: link MatchUnitInfoActivity
         ToastUtil.show(MatchDetailActivity.this, "你戳我老" + Integer.toString(selectedUserNumber) + "?!");
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+
+
+            mDetailsView.setVisibility(show ? View.GONE : View.VISIBLE);
+            mDetailsView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mDetailsView.setVisibility(show ? View.GONE : View.VISIBLE);
+                }
+            });
+
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mDetailsView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    public class MatchTask extends AsyncTask<Void, Void, Boolean>{
+
+        private DriveRouteResult mDriveRouteResult;
+        private Time mTime;
+        private int mPoolType;
+
+        MatchTask(DriveRouteResult result, int poolType, Time time){
+            mDriveRouteResult = result;
+            mPoolType = poolType;
+            mTime = time;
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            InteractUtil interactUtil = new InteractUtil();
+            if (!interactUtil.socketSuccess){
+                mMatchResult = null;
+                return false;
+            }
+            mMatchResult = interactUtil.match();
+
+            return true;
+        }
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mMatchTask = null;
+            if (success) showProgress(false);
+            else ToastUtil.show(mContext, "Connect Failed!");
+        }
+
+        @Override
+        protected void onCancelled() {
+            mMatchTask = null;
+            showProgress(false);
+        }
     }
 }
