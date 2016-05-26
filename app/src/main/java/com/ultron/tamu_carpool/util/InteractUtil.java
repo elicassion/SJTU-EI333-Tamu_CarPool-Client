@@ -2,12 +2,19 @@ package com.ultron.tamu_carpool.util;
 
 import android.util.Log;
 
+import com.amap.api.services.route.DrivePath;
+import com.amap.api.services.route.DriveRouteResult;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.Time;
 
 public class InteractUtil {
     private static final String[] DUMMY_CREDENTIALS = new String[]{
@@ -15,7 +22,7 @@ public class InteractUtil {
     };
     private Socket socket = null;
     private String message;
-    private static final String serverIP = "192.168.3.28";
+    private static final String serverIP = "192.168.3.15";
     private String mUserID = null;
     private static final int serverPort = 54321;
     private static final String SOCKET_ERROR = "socket error";
@@ -43,14 +50,27 @@ public class InteractUtil {
 
     public boolean checkIDPassword(String userID, String password){
 
-        for (String credential : DUMMY_CREDENTIALS) {
-            String[] pieces = credential.split(":");
-            if (pieces[0].equals(userID)) {
-                // Account exists, return true if the password matches.
-                return pieces[1].equals(password);
-            }
+//        for (String credential : DUMMY_CREDENTIALS) {
+//            String[] pieces = credential.split(":");
+//            if (pieces[0].equals(userID)) {
+//                // Account exists, return true if the password matches.
+//                return pieces[1].equals(password);
+//            }
+//        }
+        try {
+            JSONObject jIdPw = new JSONObject();
+            jIdPw.put("id", userID);
+            jIdPw.put("pw", password);
+            send.println(jIdPw.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            boolean success = jBackInfo.getBoolean("success");
+            Log.e("success: ", backInfo);
+            return success;
         }
-        return false;
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -70,7 +90,7 @@ public class InteractUtil {
         return 5;
     }
 
-    public String match(){
+    public String match(DriveRouteResult result, int toolType, Time time){
         String mMatchResult = "{" +
                 "    \"users\" : "+
                 "["+

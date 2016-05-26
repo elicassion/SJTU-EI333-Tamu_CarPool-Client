@@ -194,7 +194,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
                 mMatchResult = null;
                 return false;
             }
-            mMatchResult = interactUtil.match();
+            mMatchResult = interactUtil.match(mDriveRouteResult, mPoolType, mTime);
 
             return true;
         }
