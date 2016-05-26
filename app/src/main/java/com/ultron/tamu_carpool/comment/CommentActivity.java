@@ -2,13 +2,33 @@ package com.ultron.tamu_carpool.comment;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import com.ultron.tamu_carpool.R;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
-public class CommentActivity extends AppCompatActivity {
+import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.util.ToastUtil;
+
+public class CommentActivity extends AppCompatActivity implements View.OnClickListener{
+    private TextView mCommentText;
+    private Button mSubmit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment);
+
+        mCommentText = (EditText) findViewById(R.id.comment_text);
+        mSubmit = (Button) findViewById(R.id.submit_button);
+        mSubmit.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.submit_button:
+                ToastUtil.show(this, "评价成功");
+        }
     }
 }

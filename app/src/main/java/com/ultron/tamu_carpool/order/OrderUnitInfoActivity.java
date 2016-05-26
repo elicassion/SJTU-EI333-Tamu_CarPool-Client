@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.comment.CommentActivity;
 import com.ultron.tamu_carpool.util.ToastUtil;
 
 public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnClickListener{
@@ -80,6 +81,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                         break;
                     case 3:
                         ToastUtil.show(this, "人在塔在！！！");
+                        Intent intent = new Intent(OrderUnitInfoActivity.this, CommentActivity.class);
                         break;
                 }
 
