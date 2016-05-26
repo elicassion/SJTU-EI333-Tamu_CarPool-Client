@@ -60,10 +60,12 @@ import com.amap.api.services.route.WalkRouteResult;
 import com.ultron.tamu_carpool.R;
 import com.ultron.tamu_carpool.match.MatchDetailActivity;
 import com.ultron.tamu_carpool.util.AMapUtil;
+import com.ultron.tamu_carpool.util.InteractUtil;
 import com.ultron.tamu_carpool.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimerTask;
 
 /**
  * AMapV1地图中简单介绍poisearch搜索
@@ -453,6 +455,10 @@ public class SearchActivity extends FragmentActivity implements
             if (amapLocation != null
                     && amapLocation.getErrorCode() == 0) {
                 mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
+                mStartPoint = new LatLonPoint(mlocationClient.getLastKnownLocation().getLatitude(),
+                        mlocationClient.getLastKnownLocation().getLongitude());
+                InteractUtil interactUtil = new InteractUtil();
+                interactUtil.updateLocation(mStartPoint);
             } else {
                 String errText = "定位失败," + amapLocation.getErrorCode()+ ": " + amapLocation.getErrorInfo();
                 Log.e("AmapErr",errText);
@@ -575,4 +581,6 @@ public class SearchActivity extends FragmentActivity implements
                 break;
         }
     }
+
+
 }

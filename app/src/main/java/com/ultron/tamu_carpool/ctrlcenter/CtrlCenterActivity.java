@@ -72,7 +72,7 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                 View v = getLocalActivityManager().startActivity("carButton",
                         new Intent(CtrlCenterActivity.this, SearchActivity.class)).getDecorView();
 
-                carButton.setImageResource(R.drawable.tab_weixin_pressed);
+                carButton.setImageResource(R.drawable.tab_carpool_pressed);
                 body.addView(v);
                 break;
             case 1:
@@ -80,14 +80,14 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                 body.addView(getLocalActivityManager().startActivity("odrButton",
                         new Intent(CtrlCenterActivity.this, OrderMainActivity.class))
                         .getDecorView());
-                odrButton.setImageResource(R.drawable.tab_find_frd_pressed);
+                odrButton.setImageResource(R.drawable.tab_order_pressed);
                 break;
             case 2:
                 body.removeAllViews();
                 body.addView(getLocalActivityManager().startActivity("infButton",
                         new Intent(CtrlCenterActivity.this, PersonalInfoActivity.class))
                         .getDecorView());
-                infButton.setImageResource(R.drawable.tab_address_pressed);
+                infButton.setImageResource(R.drawable.tab_info_pressed);
                 break;
             default:
                 break;
@@ -116,9 +116,9 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
 
     private void resetImgs()
     {
-        carButton.setImageResource(R.drawable.tab_weixin_normal);
-        odrButton.setImageResource(R.drawable.tab_find_frd_normal);
-        infButton.setImageResource(R.drawable.tab_address_normal);
+        carButton.setImageResource(R.drawable.tab_carpool_normal);
+        odrButton.setImageResource(R.drawable.tab_order_normal);
+        infButton.setImageResource(R.drawable.tab_info_normal);
     }
 
     @Override

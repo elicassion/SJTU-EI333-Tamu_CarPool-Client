@@ -2,6 +2,8 @@ package com.ultron.tamu_carpool.util;
 
 import android.util.Log;
 
+import com.amap.api.maps2d.model.RuntimeRemoteException;
+import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.DrivePath;
 import com.amap.api.services.route.DriveRouteResult;
 
@@ -17,6 +19,18 @@ import java.net.Socket;
 import java.sql.Time;
 
 public class InteractUtil {
+    private enum COMMAND{
+        LOGIN(0), GET_USERTYPE(1), UPDATE_LOCATION(2);
+        private int nCode;
+
+        // 构造函数，枚举类型只能为私有
+
+        private COMMAND(int _nCode) {
+
+            this.nCode = _nCode;
+
+        }
+    }
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "18202121850:qwerty"
     };
@@ -59,8 +73,9 @@ public class InteractUtil {
 //        }
         try {
             JSONObject jIdPw = new JSONObject();
+            jIdPw.put("command",COMMAND.LOGIN);
             jIdPw.put("id", userID);
-            jIdPw.put("pw", password);
+            jIdPw.put("password", password);
             send.println(jIdPw.toString());
             String backInfo = back.readLine();
             JSONObject jBackInfo = new JSONObject(backInfo);
@@ -74,8 +89,22 @@ public class InteractUtil {
     }
 
 
+
     public int getUserType(){
-        return 1;
+        try {
+            JSONObject jType = new JSONObject();
+            jType.put("command",COMMAND.GET_USERTYPE);
+            jType.put("id", mUserID);
+            send.println(jType.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            int type = jBackInfo.getInt("type");
+            //Log.e("type: ", Integer.toString(type));
+            return type;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean getState(){
@@ -121,5 +150,15 @@ public class InteractUtil {
                 "]"+
                 "}";
         return mMatchResult;
+    }
+
+    public void updateLocation(LatLonPoint location){
+        try{
+            JSONObject jLoc = new JSONObject();
+            jLoc.put("command", COMMAND.UPDATE_LOCATION);
+            jLoc.put("latitude", location.getLatitude());
+            jLoc.put("longitude", location.getLongitude());
+            send.println(jLoc.toString());
+        }catch(Exception e){throw new RuntimeException(e);}
     }
 }
