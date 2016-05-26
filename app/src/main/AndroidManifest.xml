@@ -65,6 +65,7 @@
         <activity
             android:name=".login.LoginActivity"
             android:label="@string/title_activity_login"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ctrlcenter.CtrlCenterActivity"
@@ -82,12 +83,11 @@
             android:name=".order.OrderMainActivity"
             android:label="@string/title_activity_order_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".order.OrderDetailActivity"
-            android:label="@string/title_activity_order_detail"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".pay.PayActivity" />
-        <activity android:name=".comment.CommentActivity" />
+        <activity
+            android:name=".comment.CommentActivity"
+            android:label="CommentActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".personalinfo.PersonalInfoActivity"
             android:label="@string/title_activity_personal_info"
@@ -98,10 +98,6 @@
             android:label="@string/title_activity_match_detail"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".match.MatchUnitInfoActivity" />
-        <activity
-            android:name=".sb"
-            android:label="@string/title_activity_sb"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".order.OrderUnitInfoActivity"
             android:label="@string/title_activity_order_unit_info"

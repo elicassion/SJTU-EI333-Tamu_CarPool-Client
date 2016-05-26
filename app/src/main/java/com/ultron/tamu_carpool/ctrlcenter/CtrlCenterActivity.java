@@ -16,17 +16,16 @@ import com.ultron.tamu_carpool.search.SearchActivity;
 public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
 {
     @SuppressWarnings("unused")
-    private String mUserId = "18217209315";
     private LinearLayout body;
 
     //TODO: modify them to self-indicated names
-    private LinearLayout mTabWeixin;
-    private LinearLayout mTabFrd;
-    private LinearLayout mTabAddress;
+    private LinearLayout mTabCarpool;
+    private LinearLayout mTabOrder;
+    private LinearLayout mTabInfo;
 
-    private ImageButton one;
-    private ImageButton two;
-    private ImageButton three;
+    private ImageButton carButton;
+    private ImageButton odrButton;
+    private ImageButton infButton;
 
     private int flag = 0; // 通过标记跳转不同的页面，显示不同的菜单项
     /** Called when the activity is first created. */
@@ -43,9 +42,9 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
 
     private void initEvent()
     {
-        mTabWeixin.setOnClickListener(this);
-        mTabFrd.setOnClickListener(this);
-        mTabAddress.setOnClickListener(this);
+        mTabCarpool.setOnClickListener(this);
+        mTabOrder.setOnClickListener(this);
+        mTabInfo.setOnClickListener(this);
     }
 
     /*
@@ -54,14 +53,14 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
     public void initView() {
         body = (LinearLayout) findViewById(R.id.body);
 
-        mTabWeixin = (LinearLayout) findViewById(R.id.id_tab_weixin);
-        mTabFrd = (LinearLayout) findViewById(R.id.id_tab_frd);
-        mTabAddress = (LinearLayout) findViewById(R.id.id_tab_address);
+        mTabCarpool = (LinearLayout) findViewById(R.id.tab_carpool);
+        mTabOrder = (LinearLayout) findViewById(R.id.tab_order);
+        mTabInfo = (LinearLayout) findViewById(R.id.tab_info);
 
 
-        one = (ImageButton) findViewById(R.id.id_tab_weixin_img);
-        two = (ImageButton) findViewById(R.id.id_tab_frd_img);
-        three = (ImageButton) findViewById(R.id.id_tab_address_img);
+        carButton = (ImageButton) findViewById(R.id.tab_carpool_img);
+        odrButton = (ImageButton) findViewById(R.id.tab_order_img);
+        infButton = (ImageButton) findViewById(R.id.tab_info_img);
 
     }
 
@@ -70,31 +69,25 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
         switch (flag) {
             case 0:
                 body.removeAllViews();
-                Intent intentSearch = new Intent(CtrlCenterActivity.this, SearchActivity.class);
-                intentSearch.putExtra("id", mUserId);
-                View v = getLocalActivityManager().startActivity("one",
-                        intentSearch).getDecorView();
+                View v = getLocalActivityManager().startActivity("carButton",
+                        new Intent(CtrlCenterActivity.this, SearchActivity.class)).getDecorView();
 
-                one.setImageResource(R.drawable.tab_weixin_pressed);
+                carButton.setImageResource(R.drawable.tab_weixin_pressed);
                 body.addView(v);
                 break;
             case 1:
                 body.removeAllViews();
-                Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
-                intentOrderMain.putExtra("id", mUserId);
-                body.addView(getLocalActivityManager().startActivity("two",
-                        intentOrderMain)
+                body.addView(getLocalActivityManager().startActivity("odrButton",
+                        new Intent(CtrlCenterActivity.this, OrderMainActivity.class))
                         .getDecorView());
-                two.setImageResource(R.drawable.tab_find_frd_pressed);
+                odrButton.setImageResource(R.drawable.tab_find_frd_pressed);
                 break;
             case 2:
                 body.removeAllViews();
-                Intent intentPersonalInfo = new Intent(CtrlCenterActivity.this, PersonalInfoActivity.class);
-                intentPersonalInfo.putExtra("id", mUserId);
-                body.addView(getLocalActivityManager().startActivity(
-                        "three", intentPersonalInfo)
+                body.addView(getLocalActivityManager().startActivity("infButton",
+                        new Intent(CtrlCenterActivity.this, PersonalInfoActivity.class))
                         .getDecorView());
-                three.setImageResource(R.drawable.tab_address_pressed);
+                infButton.setImageResource(R.drawable.tab_address_pressed);
                 break;
             default:
                 break;
@@ -107,13 +100,13 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
         resetImgs();
         switch (v.getId())
         {
-            case R.id.id_tab_weixin:
+            case R.id.tab_carpool:
                 showView(0);
                 break;
-            case R.id.id_tab_frd:
+            case R.id.tab_order:
                 showView(1);
                 break;
-            case R.id.id_tab_address:
+            case R.id.tab_info:
                 showView(2);
                 break;
             default:
@@ -123,9 +116,9 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
 
     private void resetImgs()
     {
-        one.setImageResource(R.drawable.tab_weixin_normal);
-        two.setImageResource(R.drawable.tab_find_frd_normal);
-        three.setImageResource(R.drawable.tab_address_normal);
+        carButton.setImageResource(R.drawable.tab_weixin_normal);
+        odrButton.setImageResource(R.drawable.tab_find_frd_normal);
+        infButton.setImageResource(R.drawable.tab_address_normal);
     }
 
     @Override

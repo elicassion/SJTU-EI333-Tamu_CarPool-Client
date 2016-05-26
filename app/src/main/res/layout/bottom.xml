@@ -8,7 +8,7 @@
 
     <!--TODO:change name and picture resource-->
     <LinearLayout
-        android:id="@+id/id_tab_weixin"
+        android:id="@+id/tab_carpool"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="1"
@@ -16,7 +16,7 @@
         android:orientation="vertical" >
 
         <ImageButton
-            android:id="@+id/id_tab_weixin_img"
+            android:id="@+id/tab_carpool_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#00000000"
@@ -31,7 +31,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/id_tab_frd"
+        android:id="@+id/tab_order"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="1"
@@ -39,7 +39,7 @@
         android:orientation="vertical" >
 
         <ImageButton
-            android:id="@+id/id_tab_frd_img"
+            android:id="@+id/tab_order_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#00000000"
@@ -54,7 +54,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/id_tab_address"
+        android:id="@+id/tab_info"
         android:layout_width="0dp"
         android:layout_height="fill_parent"
         android:layout_weight="1"
@@ -62,7 +62,7 @@
         android:orientation="vertical" >
 
         <ImageButton
-            android:id="@+id/id_tab_address_img"
+            android:id="@+id/tab_info_img"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="#00000000"

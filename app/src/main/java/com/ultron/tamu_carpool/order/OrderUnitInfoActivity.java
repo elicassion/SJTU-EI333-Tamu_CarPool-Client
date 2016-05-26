@@ -26,7 +26,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_unit_info);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_order_unit_info_toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,6 +82,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                     case 3:
                         ToastUtil.show(this, "人在塔在！！！");
                         Intent intent = new Intent(OrderUnitInfoActivity.this, CommentActivity.class);
+                        startActivity(intent);
                         break;
                 }
 
