@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
@@ -59,11 +60,14 @@ import com.amap.api.services.route.RouteSearch.OnRouteSearchListener;
 import com.amap.api.services.route.WalkRouteResult;
 import com.ultron.tamu_carpool.R;
 import com.ultron.tamu_carpool.match.MatchDetailActivity;
+import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.AMapUtil;
 import com.ultron.tamu_carpool.util.InteractUtil;
 import com.ultron.tamu_carpool.util.ToastUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
 
@@ -74,6 +78,7 @@ public class SearchActivity extends FragmentActivity implements
         OnMarkerClickListener, InfoWindowAdapter, TextWatcher,
         OnPoiSearchListener, OnClickListener, InputtipsListener,
         AMapLocationListener, LocationSource, OnRouteSearchListener {
+    private User user;
     private AMap aMap;
     private AutoCompleteTextView searchText;// 输入搜索关键字
     private String keyWord = "";// 要输入的poi搜索关键字
@@ -84,11 +89,16 @@ public class SearchActivity extends FragmentActivity implements
     private PoiSearch.Query query;// Poi查询条件类
     private PoiSearch poiSearch;// POI搜索
 
-    private LatLonPoint mStartPoint = new LatLonPoint(31.883333, 121.2);//起点
-    private LatLonPoint mEndPoint = new LatLonPoint(31.666667, 121.23333);//终点，
-    private LatLng startPosition = AMapUtil.convertToLatLng(mStartPoint);
-    private LatLng destPosition = AMapUtil.convertToLatLng(mEndPoint);
+    private LatLonPoint mCurPoint = new LatLonPoint(31.883333, 121.2);
+    private LatLonPoint mStartPoint = null;//起点
+    private LatLonPoint mEndPoint = null;//终点
+    private LatLng curPosition = AMapUtil.convertToLatLng(mCurPoint);
+    private LatLng startPosition = null;
+    private LatLng destPosition = null;
+    private String startName = null;
     private String destName;
+    private String tarTime = null;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 
     private OnLocationChangedListener mListener;
@@ -106,6 +116,8 @@ public class SearchActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        Intent faIntent = getIntent();
+        user = (User)faIntent.getSerializableExtra("user");
         init();
     }
 
@@ -125,10 +137,8 @@ public class SearchActivity extends FragmentActivity implements
      * 设置页面监听
      */
     private void setUpMap() {
-        Button searButton = (Button) findViewById(R.id.searchButton);
+        Button searButton = (Button) findViewById(R.id.search_button);
         searButton.setOnClickListener(this);
-        Button nextButton = (Button) findViewById(R.id.nextButton);
-        nextButton.setOnClickListener(this);
         Button goForMatch = (Button) findViewById(R.id.goForMatch);
         goForMatch.setOnClickListener(this);
 
@@ -198,8 +208,25 @@ public class SearchActivity extends FragmentActivity implements
         Intent matchIntent = new Intent(SearchActivity.this, MatchDetailActivity.class);
         //TODO: ask service for more info then send them;
         matchIntent.putExtra("drive_route_result", mDriveRouteResult);
+        if (startName == null) startName = "当前位置";
+        matchIntent.putExtra("start", startName);
         matchIntent.putExtra("destination", destName);
-        startActivity(matchIntent);
+        matchIntent.putExtra("pool_type", 1);
+        if (tarTime == null){
+            Date now = new Date();
+            tarTime = dateFormat.format(now);
+        }
+        matchIntent.putExtra("time", tarTime);
+        matchIntent.putExtra("user", user);
+        startActivityForResult(matchIntent, 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 1){
+            ToastUtil.show(mContext, "请求成功！");
+        }
     }
 
 
@@ -260,10 +287,16 @@ public class SearchActivity extends FragmentActivity implements
 
         TextView snippet = (TextView) view.findViewById(R.id.snippet);
         snippet.setText(marker.getSnippet());
-        ImageButton button = (ImageButton) view
-                .findViewById(R.id.start_amap_app);
+        ImageButton setStartButton = (ImageButton) view.findViewById(R.id.set_start_point);
+        ImageButton setDestButton = (ImageButton) view.findViewById(R.id.set_dest_point);
         // 设置目的地
-        button.setOnClickListener(new View.OnClickListener() {
+        setStartButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                setStart(marker);
+            }
+        });
+        setDestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setDestination(marker);
@@ -276,12 +309,35 @@ public class SearchActivity extends FragmentActivity implements
      * 当一个标记被点击确定为目的地时
      *
      */
+    private void setStart(Marker marker) {
+        startPosition = marker.getPosition();
+        startName = marker.getTitle();
+        mStartPoint = new LatLonPoint(startPosition.latitude, startPosition.longitude);
+        aMap.clear();
+        aMap.addMarker(new MarkerOptions()
+                .position(startPosition)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+        if (destPosition != null) {
+            aMap.addMarker(new MarkerOptions()
+                    .position(destPosition)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));
+            searchRouteResult(ROUTE_TYPE_DRIVE, RouteSearch.DrivingDefault);
+        }
+        LatLngBounds bounds = new LatLngBounds.Builder()
+                .include(startPosition).include(destPosition).build();
+        // 移动地图，所有marker自适应显示。LatLngBounds与地图边缘10像素的填充区域
+        aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 10));
+    }
     private void setDestination(Marker marker) {
         destPosition = marker.getPosition();
         destName = marker.getTitle();
         mEndPoint = new LatLonPoint(destPosition.latitude, destPosition.longitude);
         aMap.clear();
-        aMap.addMarker(new MarkerOptions()
+        if (startPosition == null) {
+            mStartPoint = mCurPoint;
+            startPosition = curPosition;
+        }
+            aMap.addMarker(new MarkerOptions()
                 .position(startPosition)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
         aMap.addMarker(new MarkerOptions()
@@ -342,7 +398,7 @@ public class SearchActivity extends FragmentActivity implements
         dissmissProgressDialog();// 隐藏对话框
         if (rCode == 1000) {
             if (result != null && result.getQuery() != null) {// 搜索poi的结果
-                startPosition = getLocationFromClient();
+                //startPosition = getLocationFromClient();
                 if (result.getQuery().equals(query)) {// 是否是同一条
                     poiResult = result;
                     // 取得搜索到的poiitems有多少页
@@ -352,9 +408,9 @@ public class SearchActivity extends FragmentActivity implements
 
                     if (poiItems != null && poiItems.size() > 0) {
                         aMap.clear();// 清理之前的图标
-                        aMap.addMarker(new MarkerOptions()
-                                .position(startPosition)
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+//                        aMap.addMarker(new MarkerOptions()
+//                                .position(startPosition)
+//                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
                         PoiOverlay poiOverlay = new PoiOverlay(aMap, poiItems);
                         poiOverlay.removeFromMap();
                         poiOverlay.addToMap();
@@ -455,10 +511,11 @@ public class SearchActivity extends FragmentActivity implements
             if (amapLocation != null
                     && amapLocation.getErrorCode() == 0) {
                 mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
-                mStartPoint = new LatLonPoint(mlocationClient.getLastKnownLocation().getLatitude(),
+                mCurPoint = new LatLonPoint(mlocationClient.getLastKnownLocation().getLatitude(),
                         mlocationClient.getLastKnownLocation().getLongitude());
+                curPosition = AMapUtil.convertToLatLng(mCurPoint);
                 InteractUtil interactUtil = new InteractUtil();
-                interactUtil.updateLocation(mStartPoint);
+                interactUtil.updateLocation(mCurPoint);
             } else {
                 String errText = "定位失败," + amapLocation.getErrorCode()+ ": " + amapLocation.getErrorInfo();
                 Log.e("AmapErr",errText);
@@ -470,9 +527,10 @@ public class SearchActivity extends FragmentActivity implements
      * 从定位信息中获得位置
      */
     private LatLng getLocationFromClient() {
-        mStartPoint = new LatLonPoint(mlocationClient.getLastKnownLocation().getLatitude(),
+        mCurPoint = new LatLonPoint(mlocationClient.getLastKnownLocation().getLatitude(),
                                                     mlocationClient.getLastKnownLocation().getLongitude());
-        return AMapUtil.convertToLatLng(mStartPoint);
+        curPosition = AMapUtil.convertToLatLng(mCurPoint);
+        return AMapUtil.convertToLatLng(mCurPoint);
     }
 
     /**
@@ -480,7 +538,8 @@ public class SearchActivity extends FragmentActivity implements
      */
     public void searchRouteResult(int routeType, int mode) {
         if (mStartPoint == null) {
-            ToastUtil.show(mContext, "定位中，稍后再试...");
+            //ToastUtil.show(mContext, "定位中，稍后再试...");
+            mStartPoint = mCurPoint;
             return;
         }
         if (mEndPoint == null) {
@@ -565,15 +624,12 @@ public class SearchActivity extends FragmentActivity implements
             /**
              * 点击搜索按钮
              */
-            case R.id.searchButton:
+            case R.id.search_button:
                 searchButton();
                 break;
             /**
              * 点击下一页按钮
              */
-            case R.id.nextButton:
-                nextButton();
-                break;
 
             case R.id.goForMatch:
                 goForMatch();

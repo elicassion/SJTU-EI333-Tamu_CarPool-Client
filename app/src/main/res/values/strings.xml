@@ -169,6 +169,8 @@
     <string name="title_activity_order_main">OrderMainActivity</string>
     <string name="title_activity_order_detail">OrderDetailActivity</string>
     <string name="title_activity_personal_info">PersonalInfoActivity</string>
+    <string name="title_activity_match_unit_info">MatchUnitInfoActivity</string>
+    <string name="title_activity_confirmed_match">ConfirmedMatch</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 

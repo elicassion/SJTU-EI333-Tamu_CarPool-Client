@@ -1,18 +1,18 @@
 package com.ultron.tamu_carpool.usr;
 
-import com.amap.api.services.route.DrivePath;
+import java.io.Serializable;
 
 /**
  * Created by admin on 2016/5/19.
  */
-public class User {
-    protected int mUserType;
-    protected String mId;
-    protected DrivePath mPath;
-    //protected Position pos;
-    protected int mState;
+public class User implements Serializable {
+    public int userType;
+    public String ID;
 
-    public User(){}
+    public User(String id, int usertype){
+        ID = id;
+        userType = usertype;
+    }
     //TODO: using string information to initialize
     //TODO: get information into strings
 }

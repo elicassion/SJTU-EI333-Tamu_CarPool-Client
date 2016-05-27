@@ -15,8 +15,6 @@ import com.amap.api.maps2d.MapsInitializer;
 
 import com.ultron.tamu_carpool.login.LoginActivity;
 import com.ultron.tamu_carpool.ctrlcenter.CtrlCenterActivity;
-import com.ultron.tamu_carpool.usr.CarOwner;
-import com.ultron.tamu_carpool.usr.Passenger;
 import com.ultron.tamu_carpool.usr.User;
 public class MainActivity extends AppCompatActivity {
 
@@ -38,18 +36,11 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == 2){
             int userType = data.getIntExtra("usertype", 1);
-            int state = data.getIntExtra("state", 0);
             String id = data.getStringExtra("id");
-            if(userType == 1){
-                user = new Passenger(userType, id, null, state);
-            }
-            else{
-                int max_psg = Integer.parseInt(data.getStringExtra("maxpsg"));
-                user = new CarOwner(userType, id, null, state, max_psg);
-            }
+            User user = new User(id, userType);
             Intent intentCtrlCenter = new Intent(MainActivity.this, CtrlCenterActivity.class);
             //TODO: relay user info
-
+            intentCtrlCenter.putExtra("user", user);
             startActivity(intentCtrlCenter);
         }
     }

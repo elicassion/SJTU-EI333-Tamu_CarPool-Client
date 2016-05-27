@@ -72,6 +72,5 @@
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end" />
 
-    <include layout="@layout/progress"/>
 
 </android.support.design.widget.CoordinatorLayout>

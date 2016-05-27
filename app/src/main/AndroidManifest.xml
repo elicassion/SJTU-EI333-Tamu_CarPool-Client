@@ -65,8 +65,8 @@
         <activity
             android:name=".login.LoginActivity"
             android:label="@string/title_activity_login"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".ctrlcenter.CtrlCenterActivity"
             android:label="@string/title_activity_ctrl_center"
@@ -87,7 +87,7 @@
         <activity
             android:name=".comment.CommentActivity"
             android:label="CommentActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".personalinfo.PersonalInfoActivity"
             android:label="@string/title_activity_personal_info"
@@ -97,11 +97,19 @@
             android:name=".match.MatchDetailActivity"
             android:label="@string/title_activity_match_detail"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".match.MatchUnitInfoActivity" />
+        <activity
+            android:name=".match.MatchUnitInfoActivity"
+            android:label="@string/title_activity_match_unit_info"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".order.OrderUnitInfoActivity"
             android:label="@string/title_activity_order_unit_info"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".confirm.ConfirmedMatchActivity"
+            android:label="@string/title_activity_confirmed_match"
+            android:theme="@style/AppTheme.NoActionBar" />
+
     </application>
 
 </manifest>

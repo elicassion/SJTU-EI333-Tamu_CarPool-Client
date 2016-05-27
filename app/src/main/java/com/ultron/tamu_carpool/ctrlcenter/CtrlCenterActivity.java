@@ -10,9 +10,16 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.confirm.ConfirmedMatchActivity;
 import com.ultron.tamu_carpool.order.OrderMainActivity;
 import com.ultron.tamu_carpool.personalinfo.PersonalInfoActivity;
 import com.ultron.tamu_carpool.search.SearchActivity;
+import com.ultron.tamu_carpool.usr.User;
+import com.ultron.tamu_carpool.util.InteractUtil;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
 {
     @SuppressWarnings("unused")
@@ -26,18 +33,40 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
     private ImageButton carButton;
     private ImageButton odrButton;
     private ImageButton infButton;
+    private User user;
+
+    private Timer mTimer;
 
     private int flag = 0; // 通过标记跳转不同的页面，显示不同的菜单项
+    private InteractUtil interactUtil = new InteractUtil();
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_ctrl_center);
+        Intent faIntent = getIntent();
+        user = (User) faIntent.getSerializableExtra("user");
         initView();
         initEvent();
         showView(flag);
+        mTimer = new Timer(true);
+        listenOnMatchConfirm();
+    }
 
+    public void listenOnMatchConfirm() {
+        mTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                boolean getMatchConfirmSuccess = interactUtil.getMatchConfirm(user);
+                if (getMatchConfirmSuccess){
+                    Intent intentConfirmedMatch = new Intent(CtrlCenterActivity.this, ConfirmedMatchActivity.class);
+                    intentConfirmedMatch.putExtra("user", user);
+                    startActivity(intentConfirmedMatch);
+                    //showView(1);
+                }
+            }
+        },5000, 10000);
     }
 
     private void initEvent()
@@ -69,23 +98,29 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
         switch (flag) {
             case 0:
                 body.removeAllViews();
-                View v = getLocalActivityManager().startActivity("carButton",
-                        new Intent(CtrlCenterActivity.this, SearchActivity.class)).getDecorView();
+                Intent intentSearch = new Intent(CtrlCenterActivity.this, SearchActivity.class);
+                intentSearch.putExtra("user", user);
+                View v = getLocalActivityManager().startActivity("carButton", intentSearch
+                        ).getDecorView();
 
                 carButton.setImageResource(R.drawable.tab_carpool_pressed);
                 body.addView(v);
                 break;
             case 1:
                 body.removeAllViews();
-                body.addView(getLocalActivityManager().startActivity("odrButton",
-                        new Intent(CtrlCenterActivity.this, OrderMainActivity.class))
+                Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
+                intentOrderMain.putExtra("user", user);
+                body.addView(getLocalActivityManager().startActivity("odrButton",intentOrderMain
+                        )
                         .getDecorView());
                 odrButton.setImageResource(R.drawable.tab_order_pressed);
                 break;
             case 2:
                 body.removeAllViews();
-                body.addView(getLocalActivityManager().startActivity("infButton",
-                        new Intent(CtrlCenterActivity.this, PersonalInfoActivity.class))
+                Intent intentPersonalInfo = new Intent(CtrlCenterActivity.this, PersonalInfoActivity.class);
+                intentPersonalInfo.putExtra("user", user);
+                body.addView(getLocalActivityManager().startActivity("infButton",intentPersonalInfo
+                        )
                         .getDecorView());
                 infButton.setImageResource(R.drawable.tab_info_pressed);
                 break;

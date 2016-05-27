@@ -24,7 +24,15 @@
 
     <!--TODO:change this image-->
     <ImageButton
-        android:id="@+id/start_amap_app"
+        android:id="@+id/set_start_point"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/snippet"
+        android:background="@drawable/start_uri" />
+    <ImageButton
+        android:id="@+id/set_dest_point"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

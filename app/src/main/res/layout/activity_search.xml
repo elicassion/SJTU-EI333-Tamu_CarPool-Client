@@ -17,7 +17,7 @@
             android:background="@drawable/text_search"
             android:completionThreshold="1"
             android:dropDownVerticalOffset="1.0dip"
-            android:hint="请输入关键字"
+            android:hint="起点/终点"
             android:textColorHint="@color/darkgrey"
             android:imeOptions="actionDone"
             android:inputType="text|textAutoComplete"
@@ -48,26 +48,21 @@
         android:layout_height="wrap_content"
         android:background="#000000" >
 
-        <Button
-            android:id="@+id/searchButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="搜索目的地" />
 
         <Button
-            android:id="@+id/nextButton"
+            android:id="@+id/search_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="换一批" />
+            android:text="搜索地名" />
+
 
         <Button
             android:id="@+id/goForMatch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Go!"  />
+            android:text="去拼车！"  />
     </LinearLayout>
 
     <!--TODO:set it at bottom-->

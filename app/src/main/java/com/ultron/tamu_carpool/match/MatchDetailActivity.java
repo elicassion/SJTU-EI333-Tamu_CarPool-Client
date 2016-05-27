@@ -13,6 +13,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.util.TimeUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -21,6 +23,8 @@ import android.widget.TextView;
 
 import com.amap.api.services.route.DriveRouteResult;
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.ctrlcenter.CtrlCenterActivity;
+import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.InteractUtil;
 import com.ultron.tamu_carpool.util.ToastUtil;
 
@@ -34,10 +38,11 @@ import java.util.List;
 
 public class MatchDetailActivity extends AppCompatActivity implements View.OnClickListener{
 
+    private User user;
     private DriveRouteResult mDriveRouteResult;
     private String mDestName;
+    private String mStartName;
     private TextView mRouteInfo;
-    private ProgressBar mProgressView;
     private Context mContext;
 
     private String mMatchResult;
@@ -45,10 +50,10 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     private ViewGroup mDetailsView;
     private Toolbar toolbar;
 
+    private int mUserType;
     private int mPoolType;
-    private Time mTime;
+    private String mTime;
 
-    private MatchTask mMatchTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,11 +78,9 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
 
 
         mDetailsView = (ViewGroup)findViewById(R.id.match_detail_select);
-        mProgressView = (ProgressBar)findViewById(R.id.progress);
         mRouteInfo = (TextView) findViewById(R.id.route_info);
 
         getDriveRouteResultFromSearch();
-        showProgress(true);
         beginMatch();
     }
 
@@ -86,8 +89,13 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
         Intent intent = getIntent();
         mDriveRouteResult = (DriveRouteResult) intent.getSerializableExtra("drive_route_result");
         mDestName = intent.getStringExtra("destination");
+        mStartName = intent.getStringExtra("start");
+        mPoolType = intent.getIntExtra("pool_type", 1);
+        mTime = intent.getStringExtra("time");
+        user = (User)intent.getSerializableExtra("user");
 
-        mRouteInfo.setText("去往: " + mDestName);
+
+        mRouteInfo.setText("从:"+mStartName+"\n去往: " + mDestName);
 
     }
 
@@ -97,16 +105,30 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
 
         //TODO: receive messeges
         //This is DUMMY
-        mMatchTask = new MatchTask(mDriveRouteResult, mPoolType, mTime);
+//        mMatchTask = new MatchTask(mDriveRouteResult, mPoolType, mTime);
+//        mMatchTask.execute((Void) null);
+        InteractUtil interactUtil = new InteractUtil();
+        if (!interactUtil.socketSuccess){
+            mMatchResult = null;
+        }
+        mMatchResult = interactUtil.match(user, mDriveRouteResult, mPoolType, mTime, mStartName, mDestName);
+        //Log.e("match result: ", mMatchResult);
+        //接受所有数据 直接用接收并存储的本地数据初始化unitinfo
+        //在本页面每项只取一瓢
 
         try {
             mJResult = new JSONObject(mMatchResult).getJSONArray("users");
+            //TODO:区分乘客 车主 显示信息
             for (int i = 0; i < mJResult.length(); ++i){
                 JSONObject jUser = (JSONObject)mJResult.opt(i);
+                //Log.e("juser: ", jUser.toString());
                 String userDetail = "";
-                String phoneNumber = jUser.getString("phone");
-                int reputationStars = jUser.getInt("repu");
-                userDetail = "电话: " + phoneNumber + "\n" + "评价: " + Integer.toString(reputationStars) + "星";
+                String phoneNumber = jUser.getString("id");
+                int reputationStars = jUser.getInt("reputation");
+                int distance = jUser.getInt("distance");
+                userDetail = "电话: " + phoneNumber + "\n" + "评价: " + Integer.toString(reputationStars) + "星\n"
+                                +"距离:" + Integer.toString(distance);
+                //Log.e("userDetail", userDetail);
 
                 final LinearLayout linearLayout = new LinearLayout(this);
                 View.inflate(this, R.layout.content_match_detail, linearLayout);
@@ -135,78 +157,35 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
 
     public void showMoreInfo(int selectedUserNumber){
         //TODO: link MatchUnitInfoActivity
-        ToastUtil.show(MatchDetailActivity.this, "你戳我老" + Integer.toString(selectedUserNumber) + "?!");
+        //ToastUtil.show(MatchDetailActivity.this, "你戳我老" + Integer.toString(selectedUserNumber) + "?!");
+        Intent intentMatchUnitInfo = new Intent(MatchDetailActivity.this, MatchUnitInfoActivity.class);
+        JSONObject jUser = (JSONObject)mJResult.opt(selectedUserNumber-1);
+        intentMatchUnitInfo.putExtra("detail",jUser.toString());
+        intentMatchUnitInfo.putExtra("user", user);
+        intentMatchUnitInfo.putExtra("time", mTime);
+        intentMatchUnitInfo.putExtra("start", mStartName);
+        intentMatchUnitInfo.putExtra("destination", mDestName);
+        startActivityForResult(intentMatchUnitInfo, user.userType);// usertype
+        //用startactivityforresult跳转matchunitinfo 如果 matchunitinfo点击了确认 则在其finish之前传回信息
+        //然后清空界面 出现成功（？）
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-
-
-            mDetailsView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mDetailsView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mDetailsView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mDetailsView.setVisibility(show ? View.GONE : View.VISIBLE);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 1){
+            //mDetailsView.removeAllViews();
+            //TextView successText = new TextView(this);
+            //successText.setText("已确认！请到订单页等待回复");
+            //mDetailsView.addView(successText);
+            setResult(1);
+            finish();
+        }
+        else{
+            setResult(0);
         }
     }
 
-    public class MatchTask extends AsyncTask<Void, Void, Boolean>{
 
-        private DriveRouteResult mDriveRouteResult;
-        private Time mTime;
-        private int mPoolType;
 
-        MatchTask(DriveRouteResult result, int poolType, Time time){
-            mDriveRouteResult = result;
-            mPoolType = poolType;
-            mTime = time;
-        }
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            InteractUtil interactUtil = new InteractUtil();
-            if (!interactUtil.socketSuccess){
-                mMatchResult = null;
-                return false;
-            }
-            mMatchResult = interactUtil.match(mDriveRouteResult, mPoolType, mTime);
-
-            return true;
-        }
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mMatchTask = null;
-            if (success) showProgress(false);
-            else ToastUtil.show(mContext, "Connect Failed!");
-        }
-
-        @Override
-        protected void onCancelled() {
-            mMatchTask = null;
-            showProgress(false);
-        }
-    }
 }

@@ -247,18 +247,19 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
 //            } catch (InterruptedException e) {
 //                return false;
 //            }
-            InteractUtil interactUtil = new InteractUtil();
-            return interactUtil.checkIDPassword(mPhoneNumber, mPassword);
+            //InteractUtil interactUtil = new InteractUtil();
+            //return interactUtil.checkIDPassword(mPhoneNumber, mPassword);
 
 
 
-//            for (String credential : DUMMY_CREDENTIALS) {
-//                String[] pieces = credential.split(":");
-//                if (pieces[0].equals(mPhoneNumber)) {
-//                    // Account exists, return true if the password matches.
-//                    return pieces[1].equals(mPassword);
-//                }
-//            }
+            for (String credential : DUMMY_CREDENTIALS) {
+                String[] pieces = credential.split(":");
+                if (pieces[0].equals(mPhoneNumber)) {
+                    // Account exists, return true if the password matches.
+                    return pieces[1].equals(mPassword);
+                }
+            }
+            return false;
 
         }
 
@@ -272,12 +273,8 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
                 Intent data = new Intent();
                 //TODO: ask service for type;
                 int mUserType = 1;
-                //JUDGE: type
-                int mState = 0;
                 data.putExtra("id", mPhoneNumber);
                 data.putExtra("usertype", mUserType);
-                data.putExtra("state", mState);
-                data.putExtra("maxpsg", 2);
                 setResult(2,data);
                 //showProgress(false);
                 finish();
