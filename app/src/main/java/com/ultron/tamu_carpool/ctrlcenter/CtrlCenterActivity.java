@@ -2,6 +2,7 @@ package com.ultron.tamu_carpool.ctrlcenter;
 
 import android.app.ActivityGroup;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -10,12 +11,15 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.confirm.AskForConfirmActivity;
 import com.ultron.tamu_carpool.confirm.ConfirmedMatchActivity;
 import com.ultron.tamu_carpool.order.OrderMainActivity;
 import com.ultron.tamu_carpool.personalinfo.PersonalInfoActivity;
 import com.ultron.tamu_carpool.search.SearchActivity;
 import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.InteractUtil;
+
+import org.json.JSONObject;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -38,7 +42,11 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
     private Timer mTimer;
 
     private int flag = 0; // 通过标记跳转不同的页面，显示不同的菜单项
-    private InteractUtil interactUtil = new InteractUtil();
+
+    private String orderInfo;
+    private OrderTask mOrderTask;
+    private String personalInfo;
+    private PersonalInfoTask mPersonalInfoTask;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,13 +66,29 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                boolean getMatchConfirmSuccess = interactUtil.getMatchConfirm(user);
-                if (getMatchConfirmSuccess){
-                    Intent intentConfirmedMatch = new Intent(CtrlCenterActivity.this, ConfirmedMatchActivity.class);
-                    intentConfirmedMatch.putExtra("user", user);
-                    startActivity(intentConfirmedMatch);
-                    //showView(1);
-                }
+                try {
+                    InteractUtil interactUtil = new InteractUtil();
+                    interactUtil.getMatchConfirm(user);
+                    String backInfo = interactUtil.getMatchConfirm(user);
+                    JSONObject jBackInfo = new JSONObject(backInfo);
+                    int code = jBackInfo.getInt("code");
+                    JSONObject jTarget = jBackInfo.getJSONObject("target");
+                    JSONObject jMyQuery = jBackInfo.getJSONObject("my_query");
+                    if (code == 1){//我的匹配得到了确认
+                        Intent intentConfirmedMatch = new Intent(CtrlCenterActivity.this, ConfirmedMatchActivity.class);
+                        intentConfirmedMatch.putExtra("target", jTarget.toString());
+                        intentConfirmedMatch.putExtra("my_query", jMyQuery.toString());
+                        intentConfirmedMatch.putExtra("user", user);
+                        startActivity(intentConfirmedMatch);
+                    }
+                    else if (code == 2){//我有人匹配选择了我
+                        Intent intentAskForConfirm = new Intent(CtrlCenterActivity.this, AskForConfirmActivity.class);
+                        intentAskForConfirm.putExtra("target", jTarget.toString());
+                        intentAskForConfirm.putExtra("my_query", jMyQuery.toString());
+                        //intentAskForConfirm.putExtra("user", user);
+                        startActivity(intentAskForConfirm);
+                    }
+                }catch(Exception e){throw new RuntimeException(e);}
             }
         },5000, 10000);
     }
@@ -108,21 +132,13 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                 break;
             case 1:
                 body.removeAllViews();
-                Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
-                intentOrderMain.putExtra("user", user);
-                body.addView(getLocalActivityManager().startActivity("odrButton",intentOrderMain
-                        )
-                        .getDecorView());
-                odrButton.setImageResource(R.drawable.tab_order_pressed);
+                mOrderTask = new OrderTask();
+                mOrderTask.execute((Void) null);
                 break;
             case 2:
                 body.removeAllViews();
-                Intent intentPersonalInfo = new Intent(CtrlCenterActivity.this, PersonalInfoActivity.class);
-                intentPersonalInfo.putExtra("user", user);
-                body.addView(getLocalActivityManager().startActivity("infButton",intentPersonalInfo
-                        )
-                        .getDecorView());
-                infButton.setImageResource(R.drawable.tab_info_pressed);
+                mPersonalInfoTask = new PersonalInfoTask();
+                mPersonalInfoTask.execute((Void) null);
                 break;
             default:
                 break;
@@ -160,5 +176,73 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
     protected void onDestroy(){
         super.onDestroy();
         System.exit(0);
+    }
+
+    public class OrderTask extends AsyncTask<Void, Void, Boolean> {
+        OrderTask() {
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO: link service to check id and password
+            InteractUtil interactUtil = new InteractUtil();
+            orderInfo = interactUtil.getOrderInfo(user);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mOrderTask = null;
+            if (success) {
+                Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
+                intentOrderMain.putExtra("user", user);
+                intentOrderMain.putExtra("order_info", orderInfo);
+                body.addView(getLocalActivityManager().startActivity("odrButton",intentOrderMain
+                )
+                        .getDecorView());
+                odrButton.setImageResource(R.drawable.tab_order_pressed);
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mOrderTask = null;
+        }
+
+    }
+
+    public class PersonalInfoTask extends AsyncTask<Void, Void, Boolean> {
+        PersonalInfoTask() {
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            // TODO: link service to check id and password
+            InteractUtil interactUtil = new InteractUtil();
+            personalInfo = interactUtil.getPersonalInfo(user);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mPersonalInfoTask = null;
+            if (success) {
+                Intent intentPersonalInfo = new Intent(CtrlCenterActivity.this, PersonalInfoActivity.class);
+                intentPersonalInfo.putExtra("user", user);
+                intentPersonalInfo.putExtra("personal_info", personalInfo);
+                body.addView(getLocalActivityManager().startActivity("infButton",intentPersonalInfo
+                )
+                        .getDecorView());
+                infButton.setImageResource(R.drawable.tab_info_pressed);
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mPersonalInfoTask = null;
+        }
+
     }
 }

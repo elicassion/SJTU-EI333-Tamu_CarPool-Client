@@ -10,7 +10,12 @@
     tools:context="com.ultron.tamu_carpool.confirm.ConfirmedMatchActivity">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/confirmed_text"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

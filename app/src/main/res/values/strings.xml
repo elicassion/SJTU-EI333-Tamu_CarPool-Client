@@ -264,5 +264,6 @@
     <string name="title_activity_match_detail">MatchDetailActivity</string>
     <string name="title_activity_sb">sb</string>
     <string name="title_activity_order_unit_info">OrderUnitInfoActivity</string>
+    <string name="title_activity_ask_for_confirm">AskForConfirmActivity</string>
 
 </resources>

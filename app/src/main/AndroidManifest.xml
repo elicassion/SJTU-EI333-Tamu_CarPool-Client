@@ -109,7 +109,10 @@
             android:name=".confirm.ConfirmedMatchActivity"
             android:label="@string/title_activity_confirmed_match"
             android:theme="@style/AppTheme.NoActionBar" />
-
+        <activity
+            android:name=".confirm.AskForConfirmActivity"
+            android:label="@string/title_activity_ask_for_confirm"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

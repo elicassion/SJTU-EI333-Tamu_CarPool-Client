@@ -25,6 +25,8 @@ public class MatchUnitInfoActivity extends AppCompatActivity implements View.OnC
     private String mTime;
     private String mStartName;
     private String mDestName;
+    private int mSelfQueryNumber;
+    private int targetQueryNumber;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,27 +52,35 @@ public class MatchUnitInfoActivity extends AppCompatActivity implements View.OnC
         mTime = faIntent.getStringExtra("time");
         mStartName = faIntent.getStringExtra("start");
         mDestName = faIntent.getStringExtra("destination");
+        mSelfQueryNumber = faIntent.getIntExtra("self_query_number", 0);
         //TODO：区分车主乘客
         try {
             JSONObject jUser = new JSONObject(mDetail);
             String id = jUser.getString("id");
-            //target.ID = id;
             if (user.userType == 1) target = new User(id, 2);
             else target = new User(id, 1);
-            int reputation = jUser.getInt("reputation");
-            int distance = jUser.getInt("distance");
-            JSONObject carInfo = jUser.getJSONObject("car_info");
-            String numberPlate = carInfo.getString("number_plate");
-            String carColor = carInfo.getString("car_color");
-            String insurance = carInfo.getString("insurance");
+            double reputation = jUser.getDouble("reputation");
+            int orderNumber = jUser.getInt("order_number");
+            targetQueryNumber = jUser.getInt("match_query_number");
 
             String onTheView = "";
             onTheView = onTheView + "ID: " + id + "\n";
-            onTheView = onTheView + "评价: " + Integer.toString(reputation) + "\n";
-            onTheView = onTheView + "距离: " + Integer.toString(distance) + "\n";
-            onTheView = onTheView + "车牌号: " + numberPlate + "\n";
-            onTheView = onTheView + "车辆颜色: " + carColor + "\n";
-            onTheView = onTheView + "保险情况: " + insurance + "\n";
+            onTheView = onTheView + "评价: " + Double.toString(reputation) + "\n";
+            onTheView = onTheView + "已完成订单数: " + Integer.toString(orderNumber) + "\n";
+
+            if (target.getUserType() == 2) {
+                JSONObject carInfo = jUser.getJSONObject("car_info");
+                String numberPlate = carInfo.getString("number_plate");
+                String carColor = carInfo.getString("car_color");
+                String insurance = carInfo.getString("insurance");
+                int maxPsg = carInfo.getInt("max_psg");
+                int curPsg = carInfo.getInt("cur_psg");
+                onTheView = onTheView + "车牌号: " + numberPlate + "\n";
+                onTheView = onTheView + "车辆颜色: " + carColor + "\n";
+                onTheView = onTheView + "保险情况: " + insurance + "\n";
+                onTheView = onTheView + "最多可载: " + Integer.toString(maxPsg) + "人\n";
+                onTheView = onTheView + "还可以载: " + Integer.toString(maxPsg - curPsg) + "人\n";
+            }
             textView.setText(onTheView);
 
         }catch(Exception e){throw new RuntimeException(e);}
@@ -83,7 +93,7 @@ public class MatchUnitInfoActivity extends AppCompatActivity implements View.OnC
             case R.id.match_confirm:
                 setResult(1);
                 InteractUtil interactUtil = new InteractUtil();
-                interactUtil.matchConfirm(user, target);
+                interactUtil.matchConfirm(user, target, mSelfQueryNumber, targetQueryNumber);
                 finish();
         }
     }

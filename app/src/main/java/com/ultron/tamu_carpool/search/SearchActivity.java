@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.Image;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
@@ -69,6 +70,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 import java.util.TimerTask;
 
 /**
@@ -98,7 +100,8 @@ public class SearchActivity extends FragmentActivity implements
     private String startName = null;
     private String destName;
     private String tarTime = null;
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    private int mPoolType = 1;
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 
     private OnLocationChangedListener mListener;
@@ -112,6 +115,10 @@ public class SearchActivity extends FragmentActivity implements
     private RelativeLayout mBottomLayout;
     private TextView mRotueTimeDes;
 
+    private MatchTask mMatchTask = null;
+    private String mMatchResult;
+
+    private Timer updateLocTimer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +127,7 @@ public class SearchActivity extends FragmentActivity implements
         user = (User)faIntent.getSerializableExtra("user");
         init();
     }
+    //TODO:Add time option:realtime or appointment
 
     /**
      * 初始化AMap对象
@@ -170,6 +178,19 @@ public class SearchActivity extends FragmentActivity implements
         aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
 
         aMap.moveCamera(CameraUpdateFactory.zoomTo(11));
+
+        updateLocTimer = new Timer();
+        updateLocation();
+    }
+
+    public void updateLocation() {
+        updateLocTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                InteractUtil interactUtil = new InteractUtil();
+                interactUtil.updateLocation(mCurPoint);
+            }
+        },5000, 10000);
     }
 
     /**
@@ -205,20 +226,17 @@ public class SearchActivity extends FragmentActivity implements
      * 匹配按钮
      */
     public void goForMatch(){
-        Intent matchIntent = new Intent(SearchActivity.this, MatchDetailActivity.class);
-        //TODO: ask service for more info then send them;
-        matchIntent.putExtra("drive_route_result", mDriveRouteResult);
-        if (startName == null) startName = "当前位置";
-        matchIntent.putExtra("start", startName);
-        matchIntent.putExtra("destination", destName);
-        matchIntent.putExtra("pool_type", 1);
+        if (destPosition == null || mDriveRouteResult == null ){
+            ToastUtil.show(mContext, "终点未设定");
+            return;
+        }
         if (tarTime == null){
             Date now = new Date();
             tarTime = dateFormat.format(now);
         }
-        matchIntent.putExtra("time", tarTime);
-        matchIntent.putExtra("user", user);
-        startActivityForResult(matchIntent, 1);
+        if (startName == null) startName = "当前位置";
+        mMatchTask = new MatchTask();
+        mMatchTask.execute((Void) null);
     }
 
     @Override
@@ -514,8 +532,8 @@ public class SearchActivity extends FragmentActivity implements
                 mCurPoint = new LatLonPoint(mlocationClient.getLastKnownLocation().getLatitude(),
                         mlocationClient.getLastKnownLocation().getLongitude());
                 curPosition = AMapUtil.convertToLatLng(mCurPoint);
-                InteractUtil interactUtil = new InteractUtil();
-                interactUtil.updateLocation(mCurPoint);
+                //InteractUtil interactUtil = new InteractUtil();
+                //interactUtil.updateLocation(mCurPoint);
             } else {
                 String errText = "定位失败," + amapLocation.getErrorCode()+ ": " + amapLocation.getErrorInfo();
                 Log.e("AmapErr",errText);
@@ -638,5 +656,49 @@ public class SearchActivity extends FragmentActivity implements
         }
     }
 
+
+    public class MatchTask extends AsyncTask<Void, Void, Boolean> {
+        MatchTask() {
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            InteractUtil interactUtil = new InteractUtil();
+            if (!interactUtil.socketSuccess){
+                mMatchResult = null;
+            }
+            mMatchResult = interactUtil.match(user, mDriveRouteResult, mPoolType, tarTime, startName, destName, mStartPoint, mEndPoint);
+            return true;
+
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mMatchTask = null;
+            //showProgress(false);
+            if (success) {
+                Intent matchIntent = new Intent(SearchActivity.this, MatchDetailActivity.class);
+                matchIntent.putExtra("drive_route_result", mDriveRouteResult);
+                matchIntent.putExtra("start_name", startName);
+                matchIntent.putExtra("start_point", mStartPoint);
+                matchIntent.putExtra("dest_name", destName);
+                matchIntent.putExtra("dest_point", mEndPoint);
+                matchIntent.putExtra("pool_type", mPoolType);
+                matchIntent.putExtra("time", tarTime);
+                matchIntent.putExtra("user", user);
+                //Log.e("putextra matchresult", mMatchResult);
+                matchIntent.putExtra("match_result", mMatchResult);
+                startActivityForResult(matchIntent, 1);
+
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mMatchTask = null;
+        }
+
+    }
 
 }

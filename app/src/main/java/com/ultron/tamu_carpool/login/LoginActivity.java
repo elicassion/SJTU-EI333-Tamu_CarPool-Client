@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
      * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "18202121850:qwerty"
+            "18217209315:qwerty"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -247,7 +247,7 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
 //            } catch (InterruptedException e) {
 //                return false;
 //            }
-            //InteractUtil interactUtil = new InteractUtil();
+            InteractUtil interactUtil = new InteractUtil();
             //return interactUtil.checkIDPassword(mPhoneNumber, mPassword);
 
 
@@ -292,5 +292,7 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
         }
 
     }
+
+
 }
 

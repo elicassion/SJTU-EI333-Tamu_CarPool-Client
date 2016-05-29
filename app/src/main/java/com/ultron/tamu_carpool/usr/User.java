@@ -13,6 +13,12 @@ public class User implements Serializable {
         ID = id;
         userType = usertype;
     }
+    public int getUserType(){
+        return userType;
+    }
+    public String getID(){
+        return ID;
+    }
     //TODO: using string information to initialize
     //TODO: get information into strings
 }

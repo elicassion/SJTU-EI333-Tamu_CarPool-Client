@@ -6,6 +6,7 @@ import com.amap.api.maps2d.model.RuntimeRemoteException;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.DrivePath;
 import com.amap.api.services.route.DriveRouteResult;
+import com.amap.api.services.route.DriveStep;
 import com.ultron.tamu_carpool.usr.User;
 
 import org.json.JSONArray;
@@ -19,10 +20,15 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.Time;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class InteractUtil {
     private enum COMMAND{
-        LOGIN(0), GET_USERTYPE(1), UPDATE_LOCATION(2), MATCH_CONFIRM(3),GET_CONFIRM(4);
+        LOGIN(0), GET_USERTYPE(1), UPDATE_LOCATION(14), MATCH_CONFIRM(13),GET_CONFIRM(4), MATCH(12),
+        GET_ORDER_INFO(2), GET_PERSONAL_INFO(3);
         private int nCode;
 
 
@@ -33,25 +39,26 @@ public class InteractUtil {
         }
     }
 
-    private Socket socket = null;
-    private String message;
+
     private static final String serverIP = "192.168.3.28";
     private String mUserID = null;
     private static final int serverPort = 54321;
     private static final String SOCKET_ERROR = "socket error";
-    public boolean socketSuccess = true;
+    public static boolean socketSuccess = true;
+    private static Socket socket = null;
 
-    private PrintWriter send = null;
-    private BufferedReader back = null;
+    private static PrintWriter send = null;
+    private static BufferedReader back = null;
 
-    private static boolean mKnowed = false;
 
     public InteractUtil(){
         try {
-            socket = new Socket(serverIP, serverPort);
-            send = new PrintWriter( new BufferedWriter( new OutputStreamWriter(socket.getOutputStream())),true);
-            back = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            socketSuccess = true;
+            if (socket == null) {
+                socket = new Socket(serverIP, serverPort);
+                send = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
+                back = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+                socketSuccess = true;
+            }
         }catch (Exception e) {
             Log.e(SOCKET_ERROR, e.toString());
             socketSuccess = false;
@@ -109,121 +116,218 @@ public class InteractUtil {
     }
 
     public boolean getState(User user){
-        return false;
+         try {
+            JSONObject jState = new JSONObject();
+            jState.put("command",2);
+            jState.put("id", mUserID);
+            send.println(jState.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            boolean state = jBackInfo.getBoolean("state");
+            return state;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     public int getMaxPassenger(User user){
-        return 1;
-    }
-
-    public int getReputation(User user){
-        return 5;
-    }
-
-    public String match(User user, DriveRouteResult result, int toolType, String time, String startName, String endName){
-        //上传到服务器 保存本次请求 包括请求人、路径、类型、请求、起终点名字
-        JSONObject jMatchResult = generate_test_match_result();
-
-
-        return jMatchResult.toString();
-    }
-
-    private JSONObject generate_test_match_result() {
-        JSONObject jMatchResult = new JSONObject();
-        JSONArray jUsers = new JSONArray();
-        JSONObject user1 = new JSONObject();
-        JSONObject user2 = new JSONObject();
-        JSONObject user3 = new JSONObject();
-        JSONObject user4 = new JSONObject();
-        JSONObject user5 = new JSONObject();
-        JSONObject user6 = new JSONObject();
-        JSONObject user7 = new JSONObject();
-        JSONObject user8 = new JSONObject();
         try {
-            user1.put("id", "11111111111");
-            user1.put("reputation", 5);
-            user1.put("distance", 100);
-            JSONObject user1CarInfo = new JSONObject();
-            user1CarInfo.put("number_plate", "ABC-200");
-            user1CarInfo.put("car_color", "red");
-            user1CarInfo.put("insurance", "$200000");
-            user1.put("car_info", user1CarInfo);
-            jUsers.put(user1);
-
-            user2.put("id", "22222222222");
-            user2.put("reputation", 5);
-            user2.put("distance", 100);
-            JSONObject user2CarInfo = new JSONObject();
-            user2CarInfo.put("number_plate", "FGU-200");
-            user2CarInfo.put("car_color", "red");
-            user2CarInfo.put("insurance", "$200000");
-            user2.put("car_info", user2CarInfo);
-            jUsers.put(user2);
-
-            user3.put("id", "33333333333");
-            user3.put("reputation", 5);
-            user3.put("distance", 100);
-            JSONObject user3CarInfo = new JSONObject();
-            user3CarInfo.put("number_plate", "AERY-200");
-            user3CarInfo.put("car_color", "red");
-            user3CarInfo.put("insurance", "$200000");
-            user3.put("car_info", user1CarInfo);
-            jUsers.put(user3);
-
-            user4.put("id", "44444444444");
-            user4.put("reputation", 5);
-            user4.put("distance", 100);
-            JSONObject user4CarInfo = new JSONObject();
-            user4CarInfo.put("number_plate", "QWRQWR-200");
-            user4CarInfo.put("car_color", "red");
-            user4CarInfo.put("insurance", "$200000");
-            user4.put("car_info", user1CarInfo);
-            jUsers.put(user4);
-
-            user5.put("id", "55555555555");
-            user5.put("reputation", 5);
-            user5.put("distance", 100);
-            JSONObject user5CarInfo = new JSONObject();
-            user5CarInfo.put("number_plate", "SDCAS-235");
-            user5CarInfo.put("car_color", "red");
-            user5CarInfo.put("insurance", "$200000");
-            user5.put("car_info", user5CarInfo);
-            jUsers.put(user5);
-
-            user6.put("id", "66666666666");
-            user6.put("reputation", 5);
-            user6.put("distance", 100);
-            JSONObject user6CarInfo = new JSONObject();
-            user6CarInfo.put("number_plate", "ZXC-123");
-            user6CarInfo.put("car_color", "red");
-            user6CarInfo.put("insurance", "$200000");
-            user6.put("car_info", user6CarInfo);
-            jUsers.put(user6);
-
-            user7.put("id", "77777777777");
-            user7.put("reputation", 5);
-            user7.put("distance", 100);
-            JSONObject user7CarInfo = new JSONObject();
-            user7CarInfo.put("number_plate", "ZDV212");
-            user7CarInfo.put("car_color", "red");
-            user7CarInfo.put("insurance", "$200000");
-            user7.put("car_info", user7CarInfo);
-            jUsers.put(user7);
-
-            user8.put("id", "88888888");
-            user8.put("reputation", 5);
-            user8.put("distance", 100);
-            JSONObject user8CarInfo = new JSONObject();
-            user8CarInfo.put("number_plate", "ABC-200");
-            user8CarInfo.put("car_color", "red");
-            user8CarInfo.put("insurance", "$200000");
-            user8.put("car_info", user8CarInfo);
-            jUsers.put(user8);
-
-            jMatchResult.put("users",jUsers);
-            return jMatchResult;
-        }catch(Exception e){throw new RuntimeException(e);}
+            JSONObject jMaxPassenger = new JSONObject();
+            jMaxPassenger.put("command",3);
+            jMaxPassenger.put("id", mUserID);
+            send.println(jMaxPassenger.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            int maxpassenger = jBackInfo.getInt("maxpassenger");
+            return maxpassenger;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
     }
+
+    public double getReputation(User user){
+        try {
+            JSONObject jReputation = new JSONObject();
+            jReputation.put("command",4);
+            jReputation.put("id", mUserID);
+            send.println(jReputation.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            double reputation = jBackInfo.getDouble("reputation");
+            return reputation;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean getGender(){
+        try {
+            JSONObject jGender = new JSONObject();
+            jGender.put("command",5);
+            jGender.put("id", mUserID);
+            send.println(jGender.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            boolean gender = jBackInfo.getBoolean("gender");
+            return gender;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getName(){
+        try {
+            JSONObject jName = new JSONObject();
+            jName.put("command",6);
+            jName.put("id", mUserID);
+            send.println(jName.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            String name = jBackInfo.getString("name");
+            return name;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getPhone(){
+        try {
+            JSONObject jPhone = new JSONObject();
+            jPhone.put("command",7);
+            jPhone.put("id", mUserID);
+            send.println(jPhone.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            String phone = jBackInfo.getString("phone");
+            return phone;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getNumber_Plate(){
+        try {
+            JSONObject jNumber_Plate = new JSONObject();
+            jNumber_Plate.put("command",8);
+            jNumber_Plate.put("id", mUserID);
+            send.println(jNumber_Plate.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            String number_plate = jBackInfo.getString("number_plate");
+            return number_plate;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getCarType(){
+        try {
+            JSONObject jCarType = new JSONObject();
+            jCarType.put("command",9);
+            jCarType.put("id", mUserID);
+            send.println(jCarType.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            String cartype = jBackInfo.getString("cartype");
+            return cartype;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getAge(){
+        try {
+            JSONObject jAge = new JSONObject();
+            jAge.put("command",10);
+            jAge.put("id", mUserID);
+            send.println(jAge.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            int age = jBackInfo.getInt("age");
+            return age;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getOrderNumber(){
+        try {
+            JSONObject jOrderNumber = new JSONObject();
+            jOrderNumber.put("command",11);
+            jOrderNumber.put("id", mUserID);
+            send.println(jOrderNumber.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            int order_number = jBackInfo.getInt("order_number");
+            return order_number;
+        }
+        catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String match(User user, DriveRouteResult result, int poolType, String time, String startName, String endName, LatLonPoint startPoint, LatLonPoint endPoint){
+        //上传到服务器 保存本次请求 包括请求人、路径、类型、请求、起终点名字
+        DrivePath path = result.getPaths().get(0);
+        List<DriveStep> steps = path.getSteps();
+        Set<LatLonPoint> points = new HashSet<LatLonPoint>();
+        for (int i = 0; i < steps.size(); ++i){
+            DriveStep step = steps.get(i);
+            List<LatLonPoint> stepPoint = step.getPolyline();
+            points.addAll(stepPoint);
+        }
+        //test
+        Log.e("points number: ", Integer.toString(points.size()));
+        try {
+            JSONObject jMatchQuery = new JSONObject();
+            jMatchQuery.put("command", COMMAND.MATCH.nCode);
+            JSONObject jUser = new JSONObject();
+            jUser.put("id", user.getID());
+            jUser.put("user_type", user.getUserType());
+            JSONArray jPoints = new JSONArray();
+            for (Iterator iterator = points.iterator(); iterator.hasNext(); ) {
+                JSONObject jPoint = new JSONObject();
+                LatLonPoint point = (LatLonPoint) iterator.next();
+                jPoint.put("lat", point.getLatitude());
+                jPoint.put("lon", point.getLongitude());
+                jPoints.put(jPoint);
+            }
+            JSONObject jStartPoint = new JSONObject();
+            jStartPoint.put("lat", startPoint.getLatitude());
+            jStartPoint.put("lon", startPoint.getLongitude());
+            JSONObject jEndPoint = new JSONObject();
+            jEndPoint.put("lat", endPoint.getLatitude());
+            jEndPoint.put("lon", endPoint.getLongitude());
+
+            jMatchQuery.put("user", jUser);//object
+            jMatchQuery.put("points", jPoints);//array
+            jMatchQuery.put("pool_type", poolType);
+            jMatchQuery.put("time", time);
+            jMatchQuery.put("start_name", startName);
+            jMatchQuery.put("end_name", endName);
+            jMatchQuery.put("start_point", jStartPoint);//object
+            jMatchQuery.put("end_point", jEndPoint);//object
+            send.println(jMatchQuery.toString());
+            String backInfo = null;
+            while (backInfo == null)
+                backInfo = back.readLine();
+            Log.e("points number: ", jMatchQuery.toString());
+            Log.e("match result: ", backInfo);
+            return backInfo;
+        }catch (Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
 
     public void updateLocation(LatLonPoint location){
         try{
@@ -235,42 +339,64 @@ public class InteractUtil {
         }catch(Exception e){throw new RuntimeException(e);}
     }
 
-    public void matchConfirm(User user, User target){
+    public void matchConfirm(User user, User target, int selfQueryNumber, int targetQueryNumber){
         try{
             JSONObject jMatchConfirm = new JSONObject();
             jMatchConfirm.put("command", COMMAND.MATCH_CONFIRM.nCode);
             JSONObject jUser = new JSONObject();
             jUser.put("id", user.ID);
-            jUser.put("usertype", user.userType);
+            jUser.put("user_type", user.userType);
             jMatchConfirm.put("user", jUser);
             JSONObject jTarget = new JSONObject();
             jTarget.put("id", target.ID);
-            jTarget.put("usertype", target.userType);
+            jTarget.put("user_type", target.userType);
             jMatchConfirm.put("target", jTarget);
-
-            //send.println(jMatchConfirm);
+            jMatchConfirm.put("self_query_number", selfQueryNumber);
+            jMatchConfirm.put("target_query_number",targetQueryNumber);
+            send.println(jMatchConfirm);
         }catch(Exception e){throw new RuntimeException(e);}
     }
 
-    public boolean getMatchConfirm(User user){
-//        try {
-//            JSONObject jGetConfirm = new JSONObject();
-//            jGetConfirm.put("command", COMMAND.GET_CONFIRM.nCode);
-//            JSONObject jUser = new JSONObject();
-//            jUser.put("id", user.ID);
-//            jUser.put("usertype", user.userType);
-//            jGetConfirm.put("user", jUser);
-//            send.println(jGetConfirm.toString());
-//            String backInfo = back.readLine();
-//            JSONObject jBackInfo = new JSONObject(backInfo);
-//            boolean success = jBackInfo.getBoolean("success");
-//            return success;
-//        }catch(Exception e){throw new RuntimeException(e);}
-        return !mKnowed;
+    public String getMatchConfirm(User user){
+        try {
+            JSONObject jGetConfirm = new JSONObject();
+            jGetConfirm.put("command", COMMAND.GET_CONFIRM.nCode);
+            JSONObject jUser = new JSONObject();
+            jUser.put("id", user.ID);
+            jUser.put("user_type", user.userType);
+            jGetConfirm.put("user", jUser);
+            send.println(jGetConfirm.toString());
+            String backInfo = back.readLine();
+            return backInfo;
+        }catch(Exception e){throw new RuntimeException(e);}
     }
 
-    public void setKnowed(User user, boolean knowed){
-        //TODO:modify server
-        mKnowed = knowed;
+    public String getOrderInfo(User user){
+        try {
+            JSONObject jGetOrderInfo = new JSONObject();
+            jGetOrderInfo.put("command", COMMAND.GET_ORDER_INFO.nCode);
+            JSONObject jUser = new JSONObject();
+            jUser.put("id", user.getID());
+            jUser.put("user_type", user.getUserType());
+            jGetOrderInfo.put("user", jUser);
+            send.println(jGetOrderInfo.toString());
+            String backInfo = back.readLine();
+            return backInfo;
+        }catch(Exception e){throw new RuntimeException(e);}
     }
+
+    public String getPersonalInfo(User user){
+        try {
+            JSONObject jGetOrderInfo = new JSONObject();
+            jGetOrderInfo.put("command", COMMAND.GET_PERSONAL_INFO.nCode);
+            JSONObject jUser = new JSONObject();
+            jUser.put("id", user.getID());
+            jUser.put("user_type", user.getUserType());
+            jGetOrderInfo.put("user", jUser);
+            send.println(jGetOrderInfo.toString());
+            String backInfo = back.readLine();
+            return backInfo;
+        }catch(Exception e){throw new RuntimeException(e);}
+    }
+
 }

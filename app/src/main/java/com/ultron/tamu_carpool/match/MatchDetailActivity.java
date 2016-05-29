@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.DriveRouteResult;
 import com.ultron.tamu_carpool.R;
 import com.ultron.tamu_carpool.ctrlcenter.CtrlCenterActivity;
@@ -42,6 +43,8 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     private DriveRouteResult mDriveRouteResult;
     private String mDestName;
     private String mStartName;
+    private LatLonPoint mStartPoint;
+    private LatLonPoint mEndPoint;
     private TextView mRouteInfo;
     private Context mContext;
 
@@ -53,6 +56,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     private int mUserType;
     private int mPoolType;
     private String mTime;
+    private int mSelfQueryNumber;
 
 
     @Override
@@ -64,7 +68,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
         CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         toolBarLayout.setTitle(getTitle());
 
-        //TODO:Add time option:realtime or appointment
+
 
         //TODO:辣鸡button 可以脑洞改
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -87,12 +91,18 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     public void getDriveRouteResultFromSearch()
     {
         Intent intent = getIntent();
-        mDriveRouteResult = (DriveRouteResult) intent.getSerializableExtra("drive_route_result");
-        mDestName = intent.getStringExtra("destination");
-        mStartName = intent.getStringExtra("start");
+        mDriveRouteResult = intent.getParcelableExtra("drive_route_result");
+        if (mDriveRouteResult == null)
+            Log.e("driverouteresult: ", "null");
+        mDestName = intent.getStringExtra("dest_name");
+        mStartName = intent.getStringExtra("start_name");
+        mEndPoint = intent.getParcelableExtra("dest_point");
+        mStartPoint = intent.getParcelableExtra("start_point");
         mPoolType = intent.getIntExtra("pool_type", 1);
         mTime = intent.getStringExtra("time");
         user = (User)intent.getSerializableExtra("user");
+        mMatchResult = intent.getStringExtra("match_result");
+        Log.e("matchdetail activity", mMatchResult);
 
 
         mRouteInfo.setText("从:"+mStartName+"\n去往: " + mDestName);
@@ -107,45 +117,46 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
         //This is DUMMY
 //        mMatchTask = new MatchTask(mDriveRouteResult, mPoolType, mTime);
 //        mMatchTask.execute((Void) null);
-        InteractUtil interactUtil = new InteractUtil();
-        if (!interactUtil.socketSuccess){
-            mMatchResult = null;
-        }
-        mMatchResult = interactUtil.match(user, mDriveRouteResult, mPoolType, mTime, mStartName, mDestName);
+
         //Log.e("match result: ", mMatchResult);
         //接受所有数据 直接用接收并存储的本地数据初始化unitinfo
         //在本页面每项只取一瓢
+        if (mMatchResult != null) {
+            try {
+                JSONObject jMatchResult = new JSONObject(mMatchResult);
+                mJResult = jMatchResult.getJSONArray("users");
+                mSelfQueryNumber = jMatchResult.getInt("self_query_number");
+                //TODO:区分乘客 车主 显示信息
+                if (user.getUserType() == 1 || user.getUserType() == 2) {//匹配者乘客
+                    for (int i = 0; i < mJResult.length(); ++i) {
+                        JSONObject jUser = (JSONObject) mJResult.opt(i);
+                        //Log.e("juser: ", jUser.toString());
+                        String userDetail = "";
+                        String phoneNumber = jUser.getString("id");
+                        double reputationStars = jUser.getDouble("reputation");
+                        int orderNumber = jUser.getInt("order_number");
+                        userDetail = "电话: " + phoneNumber + "\n" + "评价: " + Double.toString(reputationStars) + "星\n"
+                                        +"已成功拼车: " + Integer.toString(orderNumber) +"次" +"\n";
+                        //Log.e("userDetail", userDetail);
 
-        try {
-            mJResult = new JSONObject(mMatchResult).getJSONArray("users");
-            //TODO:区分乘客 车主 显示信息
-            for (int i = 0; i < mJResult.length(); ++i){
-                JSONObject jUser = (JSONObject)mJResult.opt(i);
-                //Log.e("juser: ", jUser.toString());
-                String userDetail = "";
-                String phoneNumber = jUser.getString("id");
-                int reputationStars = jUser.getInt("reputation");
-                int distance = jUser.getInt("distance");
-                userDetail = "电话: " + phoneNumber + "\n" + "评价: " + Integer.toString(reputationStars) + "星\n"
-                                +"距离:" + Integer.toString(distance);
-                //Log.e("userDetail", userDetail);
+                        final LinearLayout linearLayout = new LinearLayout(this);
+                        View.inflate(this, R.layout.content_match_detail, linearLayout);
+                        final View view = linearLayout.getChildAt(0);
+                        view.setTag(i + 1);
+                        view.setOnClickListener(this);
+                        linearLayout.setClickable(true);
+                        linearLayout.setFocusable(true);
 
-                final LinearLayout linearLayout = new LinearLayout(this);
-                View.inflate(this, R.layout.content_match_detail, linearLayout);
-                final View view = linearLayout.getChildAt(0);
-                view.setTag(i+1);
-                view.setOnClickListener(this);
-                linearLayout.setClickable(true);
-                linearLayout.setFocusable(true);
+                        final TextView mTextView = (TextView) linearLayout.findViewById(R.id.match_detail_text);
+                        mTextView.setText(userDetail);
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                        mDetailsView.addView(linearLayout, layoutParams);
 
-                final TextView mTextView = (TextView) linearLayout.findViewById(R.id.match_detail_text);
-                mTextView.setText(userDetail);
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                mDetailsView.addView(linearLayout, layoutParams);
-
+                    }
+                }
+            } catch (JSONException ex) {
+                ToastUtil.show(MatchDetailActivity.this, "NO Match Result!");
             }
-        } catch (JSONException ex){
-            ToastUtil.show(MatchDetailActivity.this, "NO Match Result!");
         }
 
     }
@@ -159,12 +170,13 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
         //TODO: link MatchUnitInfoActivity
         //ToastUtil.show(MatchDetailActivity.this, "你戳我老" + Integer.toString(selectedUserNumber) + "?!");
         Intent intentMatchUnitInfo = new Intent(MatchDetailActivity.this, MatchUnitInfoActivity.class);
-        JSONObject jUser = (JSONObject)mJResult.opt(selectedUserNumber-1);
+        JSONObject jUser = (JSONObject)mJResult.opt(selectedUserNumber - 1);
         intentMatchUnitInfo.putExtra("detail",jUser.toString());
         intentMatchUnitInfo.putExtra("user", user);
         intentMatchUnitInfo.putExtra("time", mTime);
         intentMatchUnitInfo.putExtra("start", mStartName);
         intentMatchUnitInfo.putExtra("destination", mDestName);
+        intentMatchUnitInfo.putExtra("self_query_number", mSelfQueryNumber);
         startActivityForResult(intentMatchUnitInfo, user.userType);// usertype
         //用startactivityforresult跳转matchunitinfo 如果 matchunitinfo点击了确认 则在其finish之前传回信息
         //然后清空界面 出现成功（？）

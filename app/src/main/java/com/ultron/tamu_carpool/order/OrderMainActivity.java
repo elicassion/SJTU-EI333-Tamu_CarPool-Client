@@ -98,6 +98,7 @@ public class OrderMainActivity extends AppCompatActivity {
          * The fragment argument representing the section number for this
          * fragment.
          */
+        //TODO: ask server
         private static final String ARG_SECTION_NUMBER = "section_number";
         private String[] mUnMatched = {"bertlps", "archer", "jarvisxx", "elicassion"};
         private String[] mHasMatched = {"sb1", "sb2", "sb3"};
