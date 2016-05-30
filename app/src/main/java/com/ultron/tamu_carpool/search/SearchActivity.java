@@ -2,7 +2,9 @@ package com.ultron.tamu_carpool.search;
 
 
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,6 +12,7 @@ import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NotificationCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,10 +21,15 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -79,7 +87,8 @@ import java.util.TimerTask;
 public class SearchActivity extends FragmentActivity implements
         OnMarkerClickListener, InfoWindowAdapter, TextWatcher,
         OnPoiSearchListener, OnClickListener, InputtipsListener,
-        AMapLocationListener, LocationSource, OnRouteSearchListener {
+        AMapLocationListener, LocationSource, OnRouteSearchListener,
+        RadioGroup.OnCheckedChangeListener{
     private User user;
     private AMap aMap;
     private AutoCompleteTextView searchText;// 输入搜索关键字
@@ -100,6 +109,8 @@ public class SearchActivity extends FragmentActivity implements
     private String startName = null;
     private String destName;
     private String tarTime = null;
+    private Date mTime = null;
+    private Date curTime;
     private int mPoolType = 1;
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
@@ -119,6 +130,10 @@ public class SearchActivity extends FragmentActivity implements
     private String mMatchResult;
 
     private Timer updateLocTimer;
+    RadioGroup poolTypeRadioGroup;
+    RadioButton realTimeBtn, appointmentBtn;
+    Button setDateBtn, setTimeBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,6 +175,17 @@ public class SearchActivity extends FragmentActivity implements
         searchText = (AutoCompleteTextView) findViewById(R.id.keyWord);
         searchText.addTextChangedListener(this);// 添加文本输入框监听事件
         editCity = (EditText) findViewById(R.id.city);
+
+        poolTypeRadioGroup = (RadioGroup)findViewById(R.id.pool_type_select);
+        realTimeBtn = (RadioButton)findViewById(R.id.realtime_btn);
+        appointmentBtn = (RadioButton)findViewById(R.id.appointment_btn);
+        setDateBtn = (Button)findViewById(R.id.set_date);
+        setTimeBtn = (Button)findViewById(R.id.set_time);
+        setDateBtn.setOnClickListener(this);
+        setTimeBtn.setOnClickListener(this);
+        realTimeBtn.setChecked(true);
+        poolTypeRadioGroup.setOnCheckedChangeListener(this);
+
         aMap.setOnMarkerClickListener(this);// 添加点击marker监听事件
         aMap.setInfoWindowAdapter(this);// 添加显示infowindow监听事件
 
@@ -231,8 +257,13 @@ public class SearchActivity extends FragmentActivity implements
             return;
         }
         if (tarTime == null){
-            Date now = new Date();
-            tarTime = dateFormat.format(now);
+            if (mPoolType == 1){
+                Date now = new Date();
+                tarTime = dateFormat.format(now);
+            }
+            else{
+                ToastUtil.show(mContext,"预约拼车请选定时间");
+            }
         }
         if (startName == null) startName = "当前位置";
         Log.e("press goformatch", "chuo");
@@ -653,14 +684,71 @@ public class SearchActivity extends FragmentActivity implements
             case R.id.search_button:
                 searchButton();
                 break;
-            /**
-             * 点击下一页按钮
-             */
-
+            case R.id.set_date:
+                setDate();
+                break;
+            case R.id.set_time:
+                setTime();
+                break;
             case R.id.goForMatch:
                 goForMatch();
+                break;
             default:
                 break;
+        }
+    }
+
+    public void setDate(){
+        DatePickerDialog datePickerDialog = new DatePickerDialog(SearchActivity.this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                String time = dateFormat.format(new Date());
+                time = time.substring(11);
+                String yearString = String.format("%04d", year);
+                String monthString = String.format("%02d", monthOfYear+1);
+                String dayOfMonthString = String.format("%02d", dayOfMonth);
+                time = yearString + "/" + monthString + "/" + dayOfMonthString + " " +time;
+                try {
+                    mTime = dateFormat.parse(time);
+                    tarTime = time;
+                }catch(Exception e){throw new RuntimeException(e);}
+
+            }
+        }, 2016, 5, 30);
+        datePickerDialog.show();
+    }
+
+    public void setTime(){
+        TimePickerDialog timePickerDialog = new TimePickerDialog(SearchActivity.this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                String time = dateFormat.format(new Date());
+                time = time.substring(0, 11);
+                String hourOfDayString = String.format("%02d", hourOfDay);
+                String minuteString = String.format("%02d", minute);
+                time = time + hourOfDayString + ":" + minuteString + ":" + "00";
+                try {
+                    mTime = dateFormat.parse(time);
+                    tarTime = time;
+                }catch(Exception e){throw new RuntimeException(e);}
+            }
+        },12, 0, true);
+        timePickerDialog.show();
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        if (checkedId == realTimeBtn.getId()){
+            mPoolType = 1;
+            mTime = new Date();
+            tarTime = dateFormat.format(mTime);
+            setDateBtn.setVisibility(View.INVISIBLE);
+            setTimeBtn.setVisibility(View.INVISIBLE);
+        }
+        else{
+            mPoolType = 2;
+            setDateBtn.setVisibility(View.VISIBLE);
+            setTimeBtn.setVisibility(View.VISIBLE);
         }
     }
 

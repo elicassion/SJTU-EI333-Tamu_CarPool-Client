@@ -57,7 +57,7 @@ public class InteractUtil {
             if (socket == null) {
                 socket = new Socket(serverIP, serverPort);
                 send = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8")), true);
-                back = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+                back = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 socketSuccess = true;
             }
         }catch (Exception e) {
@@ -338,7 +338,7 @@ public class InteractUtil {
             send.println(jMatchQuery.toString());
             String backInfo = null;
             backInfo = back.readLine();
-            Log.e("points number: ", jMatchQuery.toString());
+            Log.e("match query: ", jMatchQuery.toString());
             Log.e("match result: ", backInfo);
             return backInfo;
         }catch (Exception ex){
@@ -385,20 +385,22 @@ public class InteractUtil {
             jUser.put("user_type", user.userType);
             jGetConfirm.put("user", jUser);
             send.println(jGetConfirm.toString());
-            //String backInfo = back.readLine();
-            //return backInfo;
-            return null;
+            String backInfo = back.readLine();
+            return backInfo;
+            //return null;
         }catch(Exception e){throw new RuntimeException(e);}
     }
 
-    public String getOrderInfo(int type){
+    public String getOrderInfo(User user){
         try {
             JSONObject jGetOrderInfo = new JSONObject();
             jGetOrderInfo.put("command", COMMAND.GET_ORDER_INFO.nCode);
-            jGetOrderInfo.put("id", mUserID);
-            jGetOrderInfo.put("type", type);
+            jGetOrderInfo.put("id", user.getID());
+            jGetOrderInfo.put("user_type", user.getUserType());
+            //jGetOrderInfo.put("type", type);
             send.println(jGetOrderInfo.toString());
             String backInfo = back.readLine();
+            Log.e("orderinfo", backInfo);
             return backInfo;
         }catch(Exception e){throw new RuntimeException(e);}
     }

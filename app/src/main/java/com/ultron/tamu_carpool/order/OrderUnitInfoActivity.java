@@ -80,7 +80,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                 case 2:
                     mUnitGoBtn.setText("确认到达");
                     JSONObject jOrder = new JSONObject(mOrderInfo);
-                    int poolType2 = jOrder.getInt("pool_type");
+                    //int poolType2 = jOrder.getInt("pool_type");
                     int orderNumber = jOrder.getInt("order_number");
                     JSONObject jCarOwner = jOrder.getJSONObject("carowner");
                     JSONObject jPassenger = jOrder.getJSONObject("passenger");
@@ -90,11 +90,11 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                     String cId = jCarOwner.getString("id");
                     String pTime = jPassenger.getString("time");
                     String pStartName = jPassenger.getString("start_name");
-                    String pDestName = jPassenger.getString("end_name");
+                    String pDestName = jPassenger.getString("dest_name");
                     String pId = jPassenger.getString("id");
                     String text2 = "";
-                    if (poolType2 == 1) text2 = text2 + "实时拼车:\n";
-                    else text2 = text2 + "预约拼车:\n";
+                    //if (poolType2 == 1) text2 = text2 + "实时拼车:\n";
+                    //else text2 = text2 + "预约拼车:\n";
                     text2 = text2 + "车主: " + cId + " " + cTime + "从" + cStartName + "去往" + cDestName + "\n";
                     text2 = text2 + "乘客: " + pId + " " + pTime + "从" + pStartName + "去往" + pDestName + "\n";
                     mUnitGoBtn.setOnClickListener(this);
@@ -105,7 +105,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                     mUnitGoBtn.setText("去评价");
                     JSONObject jOrder2 = new JSONObject(mOrderInfo);
                     int orderNumber2 = jOrder2.getInt("order_number");
-                    int poolType3 = jOrder2.getInt("pool_type");
+                    //int poolType3 = jOrder2.getInt("pool_type");
                     JSONObject jCarOwner2 = jOrder2.getJSONObject("carowner");
                     JSONObject jPassenger2 = jOrder2.getJSONObject("passenger");
                     String cTime2 = jCarOwner2.getString("time");
@@ -114,24 +114,29 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                     String cId2 = jCarOwner2.getString("id");
                     String pTime2 = jPassenger2.getString("time");
                     String pStartName2 = jPassenger2.getString("start_name");
-                    String pDestName2 = jPassenger2.getString("end_name");
+                    String pDestName2 = jPassenger2.getString("dest_name");
                     String pId2 = jPassenger2.getString("id");
-                    boolean ifComment = jOrder2.getBoolean("if_comment");
-                    String comment = "";
-                    Double reputation;
-                    if (ifComment) {
-                        comment = jOrder2.getString("give_comment");
-                        reputation = jOrder2.getDouble("give_reputaion");
-                    }
-                    else{
-                        mUnitGoBtn.setOnClickListener(this);
-                    }
+                    //boolean ifComment = jOrder2.getBoolean("if_comment");
+                    String cComment = jCarOwner2.getString("comment");
+                    String pComment = jPassenger2.getString("comment");
+
+                    //String comment = "";
+                    Double cReputation = jCarOwner2.getDouble("reputation");
+                    Double pReputation = jPassenger2.getDouble("reputation");
+                    //mUnitGoBtn.setOnClickListener(this);
                     String text3 = "";
-                    if (poolType3 == 1) text3 = text3 + "实时拼车:\n";
-                    else text3 = text3 + "预约拼车:\n";
+                    //if (poolType3 == 1) text3 = text3 + "实时拼车:\n";
+                    //else text3 = text3 + "预约拼车:\n";
                     text3 = text3 + "车主: " + cId2 + " " + cTime2 + "从" + cStartName2 + "去往" + cDestName2 + "\n";
                     text3 = text3 + "乘客: " + pId2 + " " + pTime2 + "从" + pStartName2 + "去往" + pDestName2 + "\n";
-                    text3 = text3 + comment;
+                    text3 = text3 + "乘客对车主的评价:\n";
+                    text3 = text3 + cComment + "\n";
+                    text3 = text3+ "评分" + cReputation + "分\n";
+                    text3 = text3 + "车主对乘客的评价:\n";
+                    text3 = text3 + pComment + "\n";
+                    text3 = text3+ "评分" + pReputation + "分\n";
+
+                    //text3 = text3 + comment;
                     mOrderNumber = orderNumber2;
                     mUnitDetail.setText(text3);
                     break;

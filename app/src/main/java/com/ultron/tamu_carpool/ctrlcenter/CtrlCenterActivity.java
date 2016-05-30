@@ -19,6 +19,7 @@ import com.ultron.tamu_carpool.search.SearchActivity;
 import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.InteractUtil;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Timer;
@@ -47,6 +48,7 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
     //private OrderTask mOrderTask;
     private String personalInfo;
     private PersonalInfoTask mPersonalInfoTask;
+    private OrderTask mOrderTask;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,8 +75,12 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                     if (backInfo == null) return;
                     JSONObject jBackInfo = new JSONObject(backInfo);
                     int code = jBackInfo.getInt("code");
-                    JSONObject jTarget = jBackInfo.getJSONObject("target");
-                    JSONObject jMyQuery = jBackInfo.getJSONObject("my_query");
+                    JSONObject jTarget = null;
+                    JSONObject jMyQuery = null;
+                    if (code != 0) {
+                        jTarget = jBackInfo.getJSONObject("target");
+                        jMyQuery = jBackInfo.getJSONObject("my_query");
+                    }
                     if (code == 1){//我的匹配得到了确认
                         Intent intentConfirmedMatch = new Intent(CtrlCenterActivity.this, ConfirmedMatchActivity.class);
                         intentConfirmedMatch.putExtra("target", jTarget.toString());
@@ -91,7 +97,7 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                     }
                 }catch(Exception e){throw new RuntimeException(e);}
             }
-        },5000, 10000);
+        },5000, 30000);
     }
 
     private void initEvent()
@@ -132,13 +138,9 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                 break;
             case 1:
                 body.removeAllViews();
-                Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
-                intentOrderMain.putExtra("user", user);
-                intentOrderMain.putExtra("order_info", orderInfo);
-                body.addView(getLocalActivityManager().startActivity("odrButton",intentOrderMain
-                ).getDecorView());
-                odrButton.setImageResource(R.drawable.tab_order_pressed);
-                //body.addView(v);
+                mOrderTask = new OrderTask();
+                mOrderTask.execute((Void) null);
+
                 break;
             case 2:
                 body.removeAllViews();
@@ -183,6 +185,38 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
         System.exit(0);
     }
 
+    public class OrderTask extends AsyncTask<Void, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            InteractUtil interactUtil = new InteractUtil();
+            orderInfo = interactUtil.getOrderInfo(user);
+            if (orderInfo != null)
+                return true;
+            else return false;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mOrderTask = null;
+            if (success) {
+                Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
+                intentOrderMain.putExtra("user", user);
+                intentOrderMain.putExtra("order_info", orderInfo);
+                View v = getLocalActivityManager().startActivity("odrButton",intentOrderMain
+                ).getDecorView();
+                odrButton.setImageResource(R.drawable.tab_order_pressed);
+                body.addView(v);
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mOrderTask = null;
+        }
+
+    }
+
 
     public class PersonalInfoTask extends AsyncTask<Void, Void, Boolean> {
         PersonalInfoTask() {
@@ -191,7 +225,6 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: link service to check id and password
             InteractUtil interactUtil = new InteractUtil();
             personalInfo = interactUtil.getPersonalInfo(user);
             return true;

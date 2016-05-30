@@ -25,8 +25,13 @@
             android:paddingRight="37.0dip"
             android:singleLine="true"
             android:textColor="#000000"
-            android:textSize="16.0sp" />
+            android:textSize="20.0sp" />
 
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
         <EditText
             android:id="@+id/city"
             android:layout_width="match_parent"
@@ -40,7 +45,8 @@
             android:imeOptions="actionDone"
             android:singleLine="true"
             android:textColor="#000000"
-            android:textSize="16.0sp"/>
+            android:textSize="16.0sp"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <LinearLayout
@@ -64,8 +70,49 @@
             android:layout_weight="1"
             android:text="去拼车！"  />
     </LinearLayout>
-
-    <!--TODO:set it at bottom-->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:orientation="horizontal">
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/transparent"
+            android:id="@+id/pool_type_select">
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/realtime_btn"
+                android:text="实时"
+                android:textColor="#ffffff"
+                android:background="@color/transparent"/>
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/appointment_btn"
+                android:text="预约"
+                android:textColor="#ffffff"
+                android:background="@color/transparent"/>
+        </RadioGroup>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/set_time"
+            android:layout_weight="1"
+            android:text="时间"
+            android:textColor="#ffffff"
+            android:visibility="invisible"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/set_date"
+            android:layout_weight="1"
+            android:text="日期"
+            android:textColor="#ffffff"
+            android:visibility="invisible"/>
+    </LinearLayout>
     <RelativeLayout
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
