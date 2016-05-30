@@ -113,7 +113,7 @@ public class SearchActivity extends FragmentActivity implements
     private Context mContext;
     private final int ROUTE_TYPE_DRIVE = 2;
     private RelativeLayout mBottomLayout;
-    private TextView mRotueTimeDes;
+    //private TextView mRotueTimeDes;
 
     private MatchTask mMatchTask = null;
     private String mMatchResult;
@@ -153,7 +153,7 @@ public class SearchActivity extends FragmentActivity implements
         mContext = this.getApplicationContext();
 
         mBottomLayout = (RelativeLayout) findViewById(R.id.bottom_layout);
-        mRotueTimeDes = (TextView) findViewById(R.id.firstline);
+        //mRotueTimeDes = (TextView) findViewById(R.id.firstline);
         mRouteSearch = new RouteSearch(this);
         mRouteSearch.setRouteSearchListener(this);
 
@@ -188,7 +188,7 @@ public class SearchActivity extends FragmentActivity implements
             @Override
             public void run() {
                 InteractUtil interactUtil = new InteractUtil();
-                interactUtil.updateLocation(mCurPoint);
+                interactUtil.updateLocation(user, mCurPoint);
             }
         },5000, 10000);
     }
@@ -235,6 +235,7 @@ public class SearchActivity extends FragmentActivity implements
             tarTime = dateFormat.format(now);
         }
         if (startName == null) startName = "当前位置";
+        Log.e("press goformatch", "chuo");
         mMatchTask = new MatchTask();
         mMatchTask.execute((Void) null);
     }
@@ -242,7 +243,7 @@ public class SearchActivity extends FragmentActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == 1){
+        if (requestCode == 1 && resultCode == 1){
             ToastUtil.show(mContext, "请求成功！");
         }
     }
@@ -340,11 +341,18 @@ public class SearchActivity extends FragmentActivity implements
                     .position(destPosition)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));
             searchRouteResult(ROUTE_TYPE_DRIVE, RouteSearch.DrivingDefault);
+            LatLngBounds bounds = new LatLngBounds.Builder()
+                    .include(startPosition).include(destPosition).build();
+            aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 10));
         }
-        LatLngBounds bounds = new LatLngBounds.Builder()
-                .include(startPosition).include(destPosition).build();
+        else{
+            LatLngBounds bounds = new LatLngBounds.Builder()
+                    .include(startPosition).build();
+            aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 10));
+        }
+
         // 移动地图，所有marker自适应显示。LatLngBounds与地图边缘10像素的填充区域
-        aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 10));
+
     }
     private void setDestination(Marker marker) {
         destPosition = marker.getPosition();
@@ -611,11 +619,11 @@ public class SearchActivity extends FragmentActivity implements
                     drivingRouteOverlay.removeFromMap();
                     drivingRouteOverlay.addToMap();
                     drivingRouteOverlay.zoomToSpan();
-                    mBottomLayout.setVisibility(View.VISIBLE);
-                    int dis = (int) drivePath.getDistance();
-                    int dur = (int) drivePath.getDuration();
-                    String des = AMapUtil.getFriendlyTime(dur)+"("+AMapUtil.getFriendlyLength(dis)+")";
-                    mRotueTimeDes.setText(des);
+                    //mBottomLayout.setVisibility(View.VISIBLE);
+                    //int dis = (int) drivePath.getDistance();
+                    //int dur = (int) drivePath.getDuration();
+                    //String des = AMapUtil.getFriendlyTime(dur)+"("+AMapUtil.getFriendlyLength(dis)+")";
+                    //mRotueTimeDes.setText(des);
                 } else if (result != null && result.getPaths() == null) {
                     ToastUtil.show(mContext, R.string.no_result);
                 }
@@ -679,15 +687,15 @@ public class SearchActivity extends FragmentActivity implements
             //showProgress(false);
             if (success) {
                 Intent matchIntent = new Intent(SearchActivity.this, MatchDetailActivity.class);
-                matchIntent.putExtra("drive_route_result", mDriveRouteResult);
+                //matchIntent.putExtra("drive_route_result", mDriveRouteResult);
                 matchIntent.putExtra("start_name", startName);
-                matchIntent.putExtra("start_point", mStartPoint);
+                //matchIntent.putExtra("start_point", mStartPoint);
                 matchIntent.putExtra("dest_name", destName);
-                matchIntent.putExtra("dest_point", mEndPoint);
+                //matchIntent.putExtra("dest_point", mEndPoint);
                 matchIntent.putExtra("pool_type", mPoolType);
                 matchIntent.putExtra("time", tarTime);
                 matchIntent.putExtra("user", user);
-                //Log.e("putextra matchresult", mMatchResult);
+                Log.e("putextra matchresult", mMatchResult);
                 matchIntent.putExtra("match_result", mMatchResult);
                 startActivityForResult(matchIntent, 1);
 

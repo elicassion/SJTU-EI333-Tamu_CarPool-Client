@@ -60,13 +60,16 @@ public class MatchUnitInfoActivity extends AppCompatActivity implements View.OnC
             if (user.userType == 1) target = new User(id, 2);
             else target = new User(id, 1);
             double reputation = jUser.getDouble("reputation");
-            int orderNumber = jUser.getInt("order_number");
+            int finishedOrderNumber = jUser.getInt("finished_order_number");
             targetQueryNumber = jUser.getInt("match_query_number");
+            String startName = jUser.getString("start_name");
+            String destName = jUser.getString("dest_name");
 
             String onTheView = "";
             onTheView = onTheView + "ID: " + id + "\n";
+            onTheView = onTheView + "从" + startName + "去往" + destName;
             onTheView = onTheView + "评价: " + Double.toString(reputation) + "\n";
-            onTheView = onTheView + "已完成订单数: " + Integer.toString(orderNumber) + "\n";
+            onTheView = onTheView + "已完成订单数: " + Integer.toString(finishedOrderNumber) + "\n";
 
             if (target.getUserType() == 2) {
                 JSONObject carInfo = jUser.getJSONObject("car_info");

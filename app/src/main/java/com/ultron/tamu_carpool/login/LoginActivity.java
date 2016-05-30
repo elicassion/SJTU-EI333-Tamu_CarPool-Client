@@ -62,6 +62,7 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
     private View mProgressView;
     private View mLoginFormView;
     private View mImageView;
+    private int mUserType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,7 +241,6 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: link service to check id and password
 //            try {
 //                // Simulate network access.
 //                Thread.sleep(2000);
@@ -248,35 +248,34 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
 //                return false;
 //            }
             InteractUtil interactUtil = new InteractUtil();
-            //return interactUtil.checkIDPassword(mPhoneNumber, mPassword);
-
-
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mPhoneNumber)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
+            int code = interactUtil.checkIDPassword(mPhoneNumber, mPassword);
+            if (code == 0) return false;
+            else{
+                mUserType = code;
+                return true;
             }
-            return false;
+
+
+
+//            for (String credential : DUMMY_CREDENTIALS) {
+//                String[] pieces = credential.split(":");
+//                if (pieces[0].equals(mPhoneNumber)) {
+//                    // Account exists, return true if the password matches.
+//                    return pieces[1].equals(mPassword);
+//                }
+//            }
 
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
-            //showProgress(false);
 
             if (success) {
-                //writeFile(getString(R.string.user_idps_file_name), mEmail+mPassword);
                 Intent data = new Intent();
-                //TODO: ask service for type;
-                int mUserType = 1;
                 data.putExtra("id", mPhoneNumber);
                 data.putExtra("usertype", mUserType);
                 setResult(2,data);
-                //showProgress(false);
                 finish();
             } else {
                 showProgress(false);

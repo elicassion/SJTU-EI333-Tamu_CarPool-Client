@@ -27,8 +27,8 @@ import java.util.Set;
 
 public class InteractUtil {
     private enum COMMAND{
-        LOGIN(0), GET_USERTYPE(1), UPDATE_LOCATION(14), MATCH_CONFIRM(13),GET_CONFIRM(4), MATCH(12),
-        GET_ORDER_INFO(2), GET_PERSONAL_INFO(3);
+        LOGIN(0), GET_USERTYPE(1), UPDATE_LOCATION(14), MATCH_CONFIRM(13),GET_CONFIRM(15), MATCH(12),
+        GET_ORDER_INFO(18), GET_PERSONAL_INFO(3), REMATCH(16), CONFIRM_ARRIVE(17);
         private int nCode;
 
 
@@ -41,7 +41,8 @@ public class InteractUtil {
 
 
     private static final String serverIP = "192.168.3.28";
-    private String mUserID = null;
+    private static String mUserID = null;
+    private static int mUserType = 0;
     private static final int serverPort = 54321;
     private static final String SOCKET_ERROR = "socket error";
     public static boolean socketSuccess = true;
@@ -70,7 +71,7 @@ public class InteractUtil {
         mUserID = userID;
     }
 
-    public boolean checkIDPassword(String userID, String password){
+    public int checkIDPassword(String userID, String password){
 
 //        for (String credential : DUMMY_CREDENTIALS) {
 //            String[] pieces = credential.split(":");
@@ -88,8 +89,14 @@ public class InteractUtil {
             String backInfo = back.readLine();
             JSONObject jBackInfo = new JSONObject(backInfo);
             boolean success = jBackInfo.getBoolean("success");
+            int userType = jBackInfo.getInt("user_type");
             Log.e("success: ", backInfo);
-            return success;
+            if (success){
+                mUserID = userID;
+                mUserType = userType;
+                return userType;
+            }
+            else return 0;
         }
         catch(Exception e){
             throw new RuntimeException(e);
@@ -275,6 +282,18 @@ public class InteractUtil {
         }
     }
 
+    public String reMatch(int queryNumber){
+        try {
+            JSONObject jReMatch = new JSONObject();
+            jReMatch.put("command", COMMAND.REMATCH.nCode);
+            jReMatch.put("query_number", queryNumber);
+            send.println(jReMatch.toString());
+            String backInfo = back.readLine();
+            return backInfo;
+        }catch(Exception e){throw new RuntimeException(e);}
+
+    }
+
     public String match(User user, DriveRouteResult result, int poolType, String time, String startName, String endName, LatLonPoint startPoint, LatLonPoint endPoint){
         //上传到服务器 保存本次请求 包括请求人、路径、类型、请求、起终点名字
         DrivePath path = result.getPaths().get(0);
@@ -318,8 +337,7 @@ public class InteractUtil {
             jMatchQuery.put("end_point", jEndPoint);//object
             send.println(jMatchQuery.toString());
             String backInfo = null;
-            while (backInfo == null)
-                backInfo = back.readLine();
+            backInfo = back.readLine();
             Log.e("points number: ", jMatchQuery.toString());
             Log.e("match result: ", backInfo);
             return backInfo;
@@ -329,12 +347,13 @@ public class InteractUtil {
     }
 
 
-    public void updateLocation(LatLonPoint location){
+    public void updateLocation(User user, LatLonPoint location){
         try{
             JSONObject jLoc = new JSONObject();
             jLoc.put("command", COMMAND.UPDATE_LOCATION.nCode);
-            jLoc.put("latitude", location.getLatitude());
-            jLoc.put("longitude", location.getLongitude());
+            jLoc.put("lat", location.getLatitude());
+            jLoc.put("lon", location.getLongitude());
+            jLoc.put("id", user.getID());
             send.println(jLoc.toString());
         }catch(Exception e){throw new RuntimeException(e);}
     }
@@ -366,19 +385,18 @@ public class InteractUtil {
             jUser.put("user_type", user.userType);
             jGetConfirm.put("user", jUser);
             send.println(jGetConfirm.toString());
-            String backInfo = back.readLine();
-            return backInfo;
+            //String backInfo = back.readLine();
+            //return backInfo;
+            return null;
         }catch(Exception e){throw new RuntimeException(e);}
     }
 
-    public String getOrderInfo(User user){
+    public String getOrderInfo(int type){
         try {
             JSONObject jGetOrderInfo = new JSONObject();
             jGetOrderInfo.put("command", COMMAND.GET_ORDER_INFO.nCode);
-            JSONObject jUser = new JSONObject();
-            jUser.put("id", user.getID());
-            jUser.put("user_type", user.getUserType());
-            jGetOrderInfo.put("user", jUser);
+            jGetOrderInfo.put("id", mUserID);
+            jGetOrderInfo.put("type", type);
             send.println(jGetOrderInfo.toString());
             String backInfo = back.readLine();
             return backInfo;
@@ -398,5 +416,17 @@ public class InteractUtil {
             return backInfo;
         }catch(Exception e){throw new RuntimeException(e);}
     }
+
+    public void confirmArrive(int orderNumber){
+        try{
+            JSONObject jConfirmArrive = new JSONObject();
+            jConfirmArrive.put("command", COMMAND.CONFIRM_ARRIVE.nCode);
+            jConfirmArrive.put("order_number", orderNumber);
+            jConfirmArrive.put("id", mUserID);
+            send.println(jConfirmArrive.toString());
+        }catch(Exception e){throw new RuntimeException(e);}
+    }
+
+
 
 }

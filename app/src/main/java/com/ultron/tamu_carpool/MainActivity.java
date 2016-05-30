@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
             String id = data.getStringExtra("id");
             User user = new User(id, userType);
             Intent intentCtrlCenter = new Intent(MainActivity.this, CtrlCenterActivity.class);
-            //TODO: relay user info
             intentCtrlCenter.putExtra("user", user);
             startActivity(intentCtrlCenter);
         }

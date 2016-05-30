@@ -44,7 +44,7 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
     private int flag = 0; // 通过标记跳转不同的页面，显示不同的菜单项
 
     private String orderInfo;
-    private OrderTask mOrderTask;
+    //private OrderTask mOrderTask;
     private String personalInfo;
     private PersonalInfoTask mPersonalInfoTask;
     /** Called when the activity is first created. */
@@ -70,6 +70,7 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                     InteractUtil interactUtil = new InteractUtil();
                     interactUtil.getMatchConfirm(user);
                     String backInfo = interactUtil.getMatchConfirm(user);
+                    if (backInfo == null) return;
                     JSONObject jBackInfo = new JSONObject(backInfo);
                     int code = jBackInfo.getInt("code");
                     JSONObject jTarget = jBackInfo.getJSONObject("target");
@@ -126,14 +127,18 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                 intentSearch.putExtra("user", user);
                 View v = getLocalActivityManager().startActivity("carButton", intentSearch
                         ).getDecorView();
-
                 carButton.setImageResource(R.drawable.tab_carpool_pressed);
                 body.addView(v);
                 break;
             case 1:
                 body.removeAllViews();
-                mOrderTask = new OrderTask();
-                mOrderTask.execute((Void) null);
+                Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
+                intentOrderMain.putExtra("user", user);
+                intentOrderMain.putExtra("order_info", orderInfo);
+                body.addView(getLocalActivityManager().startActivity("odrButton",intentOrderMain
+                ).getDecorView());
+                odrButton.setImageResource(R.drawable.tab_order_pressed);
+                //body.addView(v);
                 break;
             case 2:
                 body.removeAllViews();
@@ -178,39 +183,6 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
         System.exit(0);
     }
 
-    public class OrderTask extends AsyncTask<Void, Void, Boolean> {
-        OrderTask() {
-
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: link service to check id and password
-            InteractUtil interactUtil = new InteractUtil();
-            orderInfo = interactUtil.getOrderInfo(user);
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mOrderTask = null;
-            if (success) {
-                Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
-                intentOrderMain.putExtra("user", user);
-                intentOrderMain.putExtra("order_info", orderInfo);
-                body.addView(getLocalActivityManager().startActivity("odrButton",intentOrderMain
-                )
-                        .getDecorView());
-                odrButton.setImageResource(R.drawable.tab_order_pressed);
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mOrderTask = null;
-        }
-
-    }
 
     public class PersonalInfoTask extends AsyncTask<Void, Void, Boolean> {
         PersonalInfoTask() {
@@ -232,10 +204,10 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                 Intent intentPersonalInfo = new Intent(CtrlCenterActivity.this, PersonalInfoActivity.class);
                 intentPersonalInfo.putExtra("user", user);
                 intentPersonalInfo.putExtra("personal_info", personalInfo);
-                body.addView(getLocalActivityManager().startActivity("infButton",intentPersonalInfo
-                )
-                        .getDecorView());
+                View v = getLocalActivityManager().startActivity("infButton",intentPersonalInfo
+                ).getDecorView();
                 infButton.setImageResource(R.drawable.tab_info_pressed);
+                body.addView(v);
             }
         }
 

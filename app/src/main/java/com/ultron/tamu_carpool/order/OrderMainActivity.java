@@ -1,6 +1,7 @@
 package com.ultron.tamu_carpool.order;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -22,8 +23,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.usr.User;
+import com.ultron.tamu_carpool.util.InteractUtil;
 import com.ultron.tamu_carpool.util.ToastUtil;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class OrderMainActivity extends AppCompatActivity {
@@ -45,6 +49,8 @@ public class OrderMainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private String orderInfo;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,9 @@ public class OrderMainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        Intent faIntent = getIntent();
+        user = (User)faIntent.getSerializableExtra("user");
+        orderInfo = faIntent.getStringExtra("order_info");
 
 
     }
@@ -100,9 +109,12 @@ public class OrderMainActivity extends AppCompatActivity {
          */
         //TODO: ask server
         private static final String ARG_SECTION_NUMBER = "section_number";
-        private String[] mUnMatched = {"bertlps", "archer", "jarvisxx", "elicassion"};
-        private String[] mHasMatched = {"sb1", "sb2", "sb3"};
-        private String[] mHasDone = {"London", "Manila", "Iceland"};
+        private String orderInfo;
+        private User user;
+        private OrderTask mOrderTask;
+        private JSONArray jUnMatched;
+        private JSONArray jHasMatched;
+        private JSONArray jHasDone;
 
         public PlaceholderFragment() {
         }
@@ -124,35 +136,78 @@ public class OrderMainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
                 View rootView = inflater.inflate(R.layout.fragment_order_main, container, false);
                 ViewGroup detailsView = (ViewGroup) rootView.findViewById (R.id.order_detail_select);
-                switch (getArguments().getInt(ARG_SECTION_NUMBER)){
-                    case 1:
-                        for (int i = 0; i < mUnMatched.length; ++i){
-                            LinearLayout linearLayout = newLinearLayout(i);
-                            final TextView mTextView = (TextView) linearLayout.findViewById(R.id.order_detail_text);
-                            mTextView.setText(mUnMatched[i]);
-                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                            detailsView.addView(linearLayout, layoutParams);
-                        }
-                        break;
-                    case 2:
-                        for (int i = 0; i < mHasMatched.length; ++i){
-                            LinearLayout linearLayout = newLinearLayout(i);
-                            final TextView mTextView = (TextView) linearLayout.findViewById(R.id.order_detail_text);
-                            mTextView.setText(mHasMatched[i]);
-                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                            detailsView.addView(linearLayout, layoutParams);
-                        }
-                        break;
-                    case 3:
-                        for (int i = 0; i < mHasDone.length; ++i){
-                            LinearLayout linearLayout = newLinearLayout(i);
-                            final TextView mTextView = (TextView) linearLayout.findViewById(R.id.order_detail_text);
-                            mTextView.setText(mHasDone[i]);
-                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                            detailsView.addView(linearLayout, layoutParams);
-                        }
-                        break;
-                }
+                try {
+                    switch (getArguments().getInt(ARG_SECTION_NUMBER)) {
+                        case 1:
+                            mOrderTask = new OrderTask(1);
+                            mOrderTask.execute((Void) null);
+                            for (int i = 0; i < jUnMatched.length(); ++i) {
+                                JSONObject jQuery = (JSONObject) jUnMatched.opt(i);
+                                //String time = jQuery.getString("time");
+                                //String startName = jQuery.getString("start_name");
+                                String destName = jQuery.getString("dest_name");
+                                String text = "";
+                                text = text + "去往" + destName + "\n";
+
+                                LinearLayout linearLayout = newLinearLayout(i);
+                                final TextView mTextView = (TextView) linearLayout.findViewById(R.id.order_detail_text);
+                                mTextView.setText(text);
+                                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                                detailsView.addView(linearLayout, layoutParams);
+                            }
+                            break;
+                        case 2:
+                            mOrderTask = new OrderTask(2);
+                            mOrderTask.execute((Void) null);
+                            for (int i = 0; i < jHasMatched.length(); ++i) {
+                                JSONObject jOrder = (JSONObject) jHasMatched.opt(i);
+                                JSONObject jCarOwner = jOrder.getJSONObject("carowner");
+                                JSONObject jPassenger = jOrder.getJSONObject("passenger");
+                                //String cTime = jCarOwner.getString("time");
+                                //String cStartName = jCarOwner.getString("start_name");
+                                String cDestName = jCarOwner.getString("dest_name");
+                                String cId = jCarOwner.getString("id");
+                                //String pTime = jPassenger.getString("time");
+                                //String pStartName = jPassenger.getString("start_name");
+                                String pDestName = jPassenger.getString("end_name");
+                                String pId = jPassenger.getString("id");
+                                String text = "";
+                                text = text + "车主: " + cId + " " + "去往" + cDestName + "\n";
+                                text = text + "乘客: " + pId + " " + "去往" + pDestName + "\n";
+                                LinearLayout linearLayout = newLinearLayout(i);
+                                final TextView mTextView = (TextView) linearLayout.findViewById(R.id.order_detail_text);
+                                mTextView.setText(text);
+                                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                                detailsView.addView(linearLayout, layoutParams);
+                            }
+                            break;
+                        case 3:
+                            mOrderTask = new OrderTask(3);
+                            mOrderTask.execute((Void) null);
+                            for (int i = 0; i < jHasDone.length(); ++i) {
+                                JSONObject jOrder = (JSONObject) jHasMatched.opt(i);
+                                JSONObject jCarOwner = jOrder.getJSONObject("carowner");
+                                JSONObject jPassenger = jOrder.getJSONObject("passenger");
+                                //String cTime = jCarOwner.getString("time");
+                                //String cStartName = jCarOwner.getString("start_name");
+                                String cDestName = jCarOwner.getString("dest_name");
+                                String cId = jCarOwner.getString("id");
+                                //String pTime = jPassenger.getString("time");
+                                //String pStartName = jPassenger.getString("start_name");
+                                String pDestName = jPassenger.getString("end_name");
+                                String pId = jPassenger.getString("id");
+                                String text = "";
+                                text = text + "车主: " + cId + " " + "去往" + cDestName + "\n";
+                                text = text + "乘客: " + pId + " " + "去往" + pDestName + "\n";
+                                LinearLayout linearLayout = newLinearLayout(i);
+                                final TextView mTextView = (TextView) linearLayout.findViewById(R.id.order_detail_text);
+                                mTextView.setText(text);
+                                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                                detailsView.addView(linearLayout, layoutParams);
+                            }
+                            break;
+                    }
+                }catch(Exception e){throw new RuntimeException(e);}
 //            View rootView = inflater.inflate(R.layout.fragment_order_main, container, false);
 //            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
 //            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER))+"\n"+getString(R.string.large_text));
@@ -177,18 +232,58 @@ public class OrderMainActivity extends AppCompatActivity {
         }
 
         public void showMoreInfo(int orderType, int tag) {
-            //TODO: link to orderunitinfo activity
-            ToastUtil.show(getActivity(), "你点我"+"老"+Integer.toString(orderType)+"的"+Integer.toString(tag)+"儿子");
             Intent intent = new Intent(getActivity(), OrderUnitInfoActivity.class);
             intent.putExtra("order_type", orderType);
             String orderInfo = null;
             switch (orderType){
-                case 1: orderInfo = mUnMatched[tag-1];break;
-                case 2: orderInfo = mHasMatched[tag-1];break;
-                case 3: orderInfo = mHasDone[tag-1];break;
+                case 1: orderInfo = (jUnMatched.opt(tag-1)).toString();break;
+                case 2: orderInfo = (jHasMatched.opt(tag-1)).toString();break;
+                case 3: orderInfo = (jHasDone.opt(tag-1)).toString();break;
             }
             intent.putExtra("order_info", orderInfo);
             startActivity(intent);
+        }
+
+        public class OrderTask extends AsyncTask<Void, Void, Boolean> {
+            private int type;
+            OrderTask(int x) {
+                type = x;
+            }
+
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                InteractUtil interactUtil = new InteractUtil();
+                orderInfo = interactUtil.getOrderInfo(type);
+                try{
+                    JSONObject jOrderInfo = new JSONObject(orderInfo);
+                    switch (type){
+                        case 1:
+                            jUnMatched = jOrderInfo.getJSONArray("unmatched");
+                            break;
+                        case 2:
+                            jHasMatched = jOrderInfo.getJSONArray("hasmatched");
+                            break;
+                        case 3:
+                            jHasDone = jOrderInfo.getJSONArray("hasdone");
+                    }
+                    return true;
+                }catch(Exception e){throw new RuntimeException(e);}
+
+            }
+
+            @Override
+            protected void onPostExecute(final Boolean success) {
+                mOrderTask = null;
+                if (success) {
+
+                }
+            }
+
+            @Override
+            protected void onCancelled() {
+                mOrderTask = null;
+            }
+
         }
     }
 
@@ -228,4 +323,6 @@ public class OrderMainActivity extends AppCompatActivity {
             return null;
         }
     }
+
+
 }

@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/snippet"
-        android:background="@drawable/start_uri" />
+        android:background="@drawable/start_uri"
+        android:layout_toLeftOf="@id/set_start_point"/>
 
 </RelativeLayout>

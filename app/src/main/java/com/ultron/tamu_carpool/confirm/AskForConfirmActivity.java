@@ -55,17 +55,38 @@ public class AskForConfirmActivity extends AppCompatActivity implements View.OnC
             String targetInfo = faIntent.getStringExtra("target");
             String selfQueryInfo = faIntent.getStringExtra("my_query");
             JSONObject jTarget = new JSONObject(targetInfo);
-            JSONObject jSelfQuery = new JSONObject();
+            JSONObject jSelfQuery = new JSONObject(selfQueryInfo);
             target = new User(jTarget.getString("id"), jTarget.getInt("user_type"));
             targetQueryNumber = jTarget.getInt("query_number");
             selfQueryNumber = jSelfQuery.getInt("query_number");
             String text = "";
-            String myStartName = "start";
-            String myEndName = "end";
-            String myTime = "八点";
-            text = text + "您的" + myTime + "从" + myStartName + "到" + myEndName + "请求已匹配到，请确认：\n";
+            String myStartName = jSelfQuery.getString("start_name");
+            String myEndName = jSelfQuery.getString("dest_name");
+            String myTime = jSelfQuery.getString("time");
+            String tarStartName = jTarget.getString("start_name");
+            String tarEndName = jTarget.getString("dest_name");
+            String tarTime = jTarget.getString("time");
+            double reputation = jTarget.getDouble("reputaion");
+            int finishedOrderNumber = jTarget.getInt("finished_order_number");
+            text = text + "您的" + myTime + "从" + myStartName + "去往" + myEndName + "请求已匹配到，请确认：\n";
             text = text + "匹配人信息：\n";
+            text = text + tarTime + "从" + tarStartName + "去往" + tarEndName + "\n";
             text = text + "联系电话: " + target.getID() + "\n";
+            text = text + "评价: " + Double.toString(reputation) + "\n";
+            text = text + "已完成订单数: " + Integer.toString(finishedOrderNumber) + "\n";
+            if (target.getUserType() == 2) {
+                JSONObject carInfo = jTarget.getJSONObject("car_info");
+                String numberPlate = carInfo.getString("number_plate");
+                String carColor = carInfo.getString("car_color");
+                String insurance = carInfo.getString("insurance");
+                int maxPsg = carInfo.getInt("max_psg");
+                int curPsg = carInfo.getInt("cur_psg");
+                text = text + "车牌号: " + numberPlate + "\n";
+                text = text + "车辆颜色: " + carColor + "\n";
+                text = text + "保险情况: " + insurance + "\n";
+                text = text + "最多可载: " + Integer.toString(maxPsg) + "人\n";
+                text = text + "还可以载: " + Integer.toString(maxPsg - curPsg) + "人\n";
+            }
             textView.setText(text);
         }catch(Exception e){throw new RuntimeException(e);}
 

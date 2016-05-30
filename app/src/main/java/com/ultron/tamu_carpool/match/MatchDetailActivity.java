@@ -91,13 +91,13 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     public void getDriveRouteResultFromSearch()
     {
         Intent intent = getIntent();
-        mDriveRouteResult = intent.getParcelableExtra("drive_route_result");
-        if (mDriveRouteResult == null)
-            Log.e("driverouteresult: ", "null");
+        //mDriveRouteResult = intent.getParcelableExtra("drive_route_result");
+        //if (mDriveRouteResult == null)
+            //Log.e("driverouteresult: ", "null");
         mDestName = intent.getStringExtra("dest_name");
         mStartName = intent.getStringExtra("start_name");
-        mEndPoint = intent.getParcelableExtra("dest_point");
-        mStartPoint = intent.getParcelableExtra("start_point");
+        //mEndPoint = intent.getParcelableExtra("dest_point");
+        //mStartPoint = intent.getParcelableExtra("start_point");
         mPoolType = intent.getIntExtra("pool_type", 1);
         mTime = intent.getStringExtra("time");
         user = (User)intent.getSerializableExtra("user");
@@ -111,10 +111,6 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
 
     public void beginMatch()
     {
-        //TODO: send messeges
-
-        //TODO: receive messeges
-        //This is DUMMY
 //        mMatchTask = new MatchTask(mDriveRouteResult, mPoolType, mTime);
 //        mMatchTask.execute((Void) null);
 
@@ -134,9 +130,9 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
                         String userDetail = "";
                         String phoneNumber = jUser.getString("id");
                         double reputationStars = jUser.getDouble("reputation");
-                        int orderNumber = jUser.getInt("order_number");
+                        int finishedOrderNumber = jUser.getInt("finished_order_number");
                         userDetail = "电话: " + phoneNumber + "\n" + "评价: " + Double.toString(reputationStars) + "星\n"
-                                        +"已成功拼车: " + Integer.toString(orderNumber) +"次" +"\n";
+                                        +"已成功拼车: " + Integer.toString(finishedOrderNumber) +"次" +"\n";
                         //Log.e("userDetail", userDetail);
 
                         final LinearLayout linearLayout = new LinearLayout(this);

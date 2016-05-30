@@ -33,12 +33,12 @@ public class ConfirmedMatchActivity extends AppCompatActivity implements View.On
             String targetInfo = faIntent.getStringExtra("target");
             String selfQueryInfo = faIntent.getStringExtra("my_query");
             JSONObject jTarget = new JSONObject(targetInfo);
-            JSONObject jSelfQuery = new JSONObject();
+            JSONObject jSelfQuery = new JSONObject(selfQueryInfo);
             User target = new User(jTarget.getString("id"), jTarget.getInt("user_type"));
             String text = "";
-            String myStartName = "start";
-            String myEndName = "end";
-            String myTime = "八点";
+            String myStartName = jSelfQuery.getString("start_name");
+            String myEndName = jSelfQuery.getString("dest_name");
+            String myTime = jSelfQuery.getString("time");
             text = text + "您的" + myTime + "从" + myStartName + "到" + myEndName + "\n";
             text = text + "向用户" + target.getID()+ "发出的匹配请求已被确认";
             textView.setText(text);
