@@ -32,7 +32,7 @@
         android:id="@+id/login_image"
         android:layout_width="181dp"
         android:layout_height="177dp"
-        android:src="@drawable/match_detail_photo"
+        android:src="@drawable/login_image"
         android:layout_gravity="center"
         android:layout_marginBottom="50dp" />
 

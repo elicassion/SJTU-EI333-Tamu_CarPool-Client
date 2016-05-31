@@ -28,7 +28,7 @@ import java.util.Set;
 public class InteractUtil {
     private enum COMMAND{
         LOGIN(0), GET_USERTYPE(1), UPDATE_LOCATION(14), MATCH_CONFIRM(13),GET_CONFIRM(15), MATCH(12),
-        GET_ORDER_INFO(18), GET_PERSONAL_INFO(3), REMATCH(16), CONFIRM_ARRIVE(17);
+        GET_ORDER_INFO(18), GET_PERSONAL_INFO(20), REMATCH(16), CONFIRM_ARRIVE(17), ADD_COMMENT(19);
         private int nCode;
 
 
@@ -40,7 +40,7 @@ public class InteractUtil {
     }
 
 
-    private static final String serverIP = "192.168.3.28";
+    private static final String serverIP = "192.168.3.15";
     private static String mUserID = null;
     private static int mUserType = 0;
     private static final int serverPort = 54321;
@@ -373,6 +373,7 @@ public class InteractUtil {
             jMatchConfirm.put("self_query_number", selfQueryNumber);
             jMatchConfirm.put("target_query_number",targetQueryNumber);
             send.println(jMatchConfirm);
+            Log.e("match confirm", jMatchConfirm.toString());
         }catch(Exception e){throw new RuntimeException(e);}
     }
 
@@ -386,6 +387,7 @@ public class InteractUtil {
             jGetConfirm.put("user", jUser);
             send.println(jGetConfirm.toString());
             String backInfo = back.readLine();
+            Log.e("back code", backInfo);
             return backInfo;
             //return null;
         }catch(Exception e){throw new RuntimeException(e);}
@@ -405,20 +407,6 @@ public class InteractUtil {
         }catch(Exception e){throw new RuntimeException(e);}
     }
 
-    public String getPersonalInfo(User user){
-        try {
-            JSONObject jGetOrderInfo = new JSONObject();
-            jGetOrderInfo.put("command", COMMAND.GET_PERSONAL_INFO.nCode);
-            JSONObject jUser = new JSONObject();
-            jUser.put("id", user.getID());
-            jUser.put("user_type", user.getUserType());
-            jGetOrderInfo.put("user", jUser);
-            send.println(jGetOrderInfo.toString());
-            String backInfo = back.readLine();
-            return backInfo;
-        }catch(Exception e){throw new RuntimeException(e);}
-    }
-
     public void confirmArrive(int orderNumber){
         try{
             JSONObject jConfirmArrive = new JSONObject();
@@ -426,6 +414,31 @@ public class InteractUtil {
             jConfirmArrive.put("order_number", orderNumber);
             jConfirmArrive.put("id", mUserID);
             send.println(jConfirmArrive.toString());
+        }catch(Exception e){throw new RuntimeException(e);}
+    }
+
+    public void addComment(User user, int orderNumber, String commentContent, double repu){
+        try{
+            JSONObject jAddComment = new JSONObject();
+            jAddComment.put("command", COMMAND.ADD_COMMENT.nCode);
+            jAddComment.put("order_number", orderNumber);
+            jAddComment.put("id", user.getID());
+            jAddComment.put("user_type", user.getUserType());
+            jAddComment.put("reputation", repu);
+            jAddComment.put("comment", commentContent);
+            send.println(jAddComment.toString());
+        }catch(Exception e){throw new RuntimeException(e);}
+    }
+
+    public String getPersonalInfo(User user){
+        try{
+            JSONObject jGetPersonalInfo = new JSONObject();
+            jGetPersonalInfo.put("command", COMMAND.GET_PERSONAL_INFO.nCode);
+            jGetPersonalInfo.put("id", user.getID());
+            jGetPersonalInfo.put("user_type", user.getUserType());
+            send.println(jGetPersonalInfo.toString());
+            String backInfo = back.readLine();
+            return backInfo;
         }catch(Exception e){throw new RuntimeException(e);}
     }
 

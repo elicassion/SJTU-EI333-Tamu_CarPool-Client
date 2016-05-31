@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.ultron.tamu_carpool.R;
 import com.ultron.tamu_carpool.comment.CommentActivity;
+import com.ultron.tamu_carpool.match.MatchDetailActivity;
 import com.ultron.tamu_carpool.match.MatchUnitInfoActivity;
 import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.InteractUtil;
@@ -34,6 +35,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
     private ReMatchTask mReMatchTask;
     private ConfirmArriveTask mConfirmArriveTask;
     private Context mContext;
+    private User mUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +48,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                 finish();
             }
         });
+        mContext = this.getApplicationContext();
         initView();
 
     }
@@ -72,7 +75,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                     String text = "";
                     if (poolType == 1) text = text + "实时拼车:\n";
                     else text = text + "预约拼车:\n";
-                    text = text + time + "\n从" + startName + "\n" + "去往" + destName;
+                    text = text + time + "\n\t从" + startName + "\n" + "去往" + destName;
                     mUnitGoBtn.setOnClickListener(this);
                     mQueryNumber = queryNumber;
                     mUnitDetail.setText(text);
@@ -95,14 +98,14 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                     String text2 = "";
                     //if (poolType2 == 1) text2 = text2 + "实时拼车:\n";
                     //else text2 = text2 + "预约拼车:\n";
-                    text2 = text2 + "车主: " + cId + " " + cTime + "从" + cStartName + "去往" + cDestName + "\n";
-                    text2 = text2 + "乘客: " + pId + " " + pTime + "从" + pStartName + "去往" + pDestName + "\n";
+                    text2 = text2 + "车主: " + cId + "\n\t" + cTime + " 从 " + cStartName + "去往 " + cDestName + "\n";
+                    text2 = text2 + "乘客: " + pId + "\n\t" + pTime + " 从 " + pStartName + "去往 " + pDestName + "\n";
                     mUnitGoBtn.setOnClickListener(this);
                     mOrderNumber = orderNumber;
                     mUnitDetail.setText(text2);
                     break;
                 case 3:
-                    mUnitGoBtn.setText("去评价");
+
                     JSONObject jOrder2 = new JSONObject(mOrderInfo);
                     int orderNumber2 = jOrder2.getInt("order_number");
                     //int poolType3 = jOrder2.getInt("pool_type");
@@ -116,27 +119,44 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                     String pStartName2 = jPassenger2.getString("start_name");
                     String pDestName2 = jPassenger2.getString("dest_name");
                     String pId2 = jPassenger2.getString("id");
-                    //boolean ifComment = jOrder2.getBoolean("if_comment");
-                    String cComment = jCarOwner2.getString("comment");
-                    String pComment = jPassenger2.getString("comment");
+                    boolean ifCarComment = jCarOwner2.getBoolean("if_comment");
+                    boolean ifPassengerComment = jPassenger2.getBoolean("if_comment");
+                    String cComment = "还未评价";
+                    String pComment = "还未评价";
+                    double cReputation = -1;
+                    double pReputation = -1;
+                    if (ifCarComment) {
+                        cComment = jCarOwner2.getString("comment");
+                        cReputation = jCarOwner2.getDouble("reputation");
+                    }
+                    if (ifPassengerComment) {
+                        pComment = jPassenger2.getString("comment");
+                        pReputation = jPassenger2.getDouble("reputation");
+                    }
 
                     //String comment = "";
-                    Double cReputation = jCarOwner2.getDouble("reputation");
-                    Double pReputation = jPassenger2.getDouble("reputation");
                     //mUnitGoBtn.setOnClickListener(this);
                     String text3 = "";
                     //if (poolType3 == 1) text3 = text3 + "实时拼车:\n";
                     //else text3 = text3 + "预约拼车:\n";
-                    text3 = text3 + "车主: " + cId2 + " " + cTime2 + "从" + cStartName2 + "去往" + cDestName2 + "\n";
-                    text3 = text3 + "乘客: " + pId2 + " " + pTime2 + "从" + pStartName2 + "去往" + pDestName2 + "\n";
-                    text3 = text3 + "乘客对车主的评价:\n";
+                    text3 = text3 + "车主: " + cId2 + "\n\t" + cTime2 + " 从 " + cStartName2 + "去往 " + cDestName2 + "\n";
+                    text3 = text3 + "乘客: " + pId2 + "\n\t" + pTime2 + " 从 " + pStartName2 + "去往 " + pDestName2 + "\n";
+                    text3 = text3 + "乘客对车主的评价:\n\t";
                     text3 = text3 + cComment + "\n";
-                    text3 = text3+ "评分" + cReputation + "分\n";
-                    text3 = text3 + "车主对乘客的评价:\n";
+                    text3 = text3+ "评分:" + String.format("%.2f", cReputation) + "分\n";
+                    text3 = text3 + "车主对乘客的评价:\n\t";
                     text3 = text3 + pComment + "\n";
-                    text3 = text3+ "评分" + pReputation + "分\n";
+                    text3 = text3+ "评分" + String.format("%.2f", pReputation) + "分\n";
 
                     //text3 = text3 + comment;
+                    if (mUser.getUserType() == 1 && !ifPassengerComment
+                            || mUser.getUserType() == 2 && !ifCarComment) {
+                        mUnitGoBtn.setText("去评价");
+                        mUnitGoBtn.setOnClickListener(this);
+                    }
+                    else{
+                        mUnitGoBtn.setText("已评价");
+                    }
                     mOrderNumber = orderNumber2;
                     mUnitDetail.setText(text3);
                     break;
@@ -148,6 +168,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
         Intent intent = getIntent();
         mOrderType = intent.getIntExtra("order_type", 0);
         mOrderInfo = intent.getStringExtra("order_info");
+        mUser = (User) intent.getSerializableExtra("user");
     }
 
     @Override
@@ -167,6 +188,8 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                     case 3:
                         //ToastUtil.show(this, "人在塔在！！！");
                         Intent intent = new Intent(OrderUnitInfoActivity.this, CommentActivity.class);
+                        intent.putExtra("order_info", mOrderInfo);
+                        intent.putExtra("user", mUser);
                         startActivity(intent);
                         break;
                 }
@@ -193,7 +216,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                 User user = new User(id, userType);
                 String matchResult = interactUtil.reMatch(mQueryNumber);
 
-                Intent intentMatchDetail = new Intent(OrderUnitInfoActivity.this, MatchUnitInfoActivity.class);
+                Intent intentMatchDetail = new Intent(OrderUnitInfoActivity.this, MatchDetailActivity.class);
                 intentMatchDetail.putExtra("start_name", startName);
                 intentMatchDetail.putExtra("dest_name", destName);
                 intentMatchDetail.putExtra("pool_type", poolType);
@@ -237,7 +260,7 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
         protected void onPostExecute(final Boolean success) {
             mConfirmArriveTask = null;
             if (success) {
-                ToastUtil.show(mContext, "请及时评价!");
+                confirmSetResult();
                 finish();
             }
         }
@@ -254,8 +277,13 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2 && resultCode == 1){
             ToastUtil.show(mContext, "请求成功！");
+            setResult(1);
             finish();
         }
+    }
+
+    public void confirmSetResult(){
+        setResult(2);
     }
 
 

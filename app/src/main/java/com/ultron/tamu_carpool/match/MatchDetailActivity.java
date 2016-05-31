@@ -63,27 +63,13 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_match_detail);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.activity_match_detail_toolbar);
         setSupportActionBar(toolbar);
-        CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        toolBarLayout.setTitle(getTitle());
-
-
-
-        //TODO:辣鸡button 可以脑洞改
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
+        //toolBarLayout.setTitle(getTitle());
 
         mDetailsView = (ViewGroup)findViewById(R.id.match_detail_select);
         mRouteInfo = (TextView) findViewById(R.id.route_info);
-
+        mContext = this.getApplicationContext();
         getDriveRouteResultFromSearch();
         beginMatch();
     }
@@ -131,7 +117,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
                         String phoneNumber = jUser.getString("id");
                         double reputationStars = jUser.getDouble("reputation");
                         int finishedOrderNumber = jUser.getInt("finished_order_number");
-                        userDetail = "电话: " + phoneNumber + "\n" + "评价: " + Double.toString(reputationStars) + "星\n"
+                        userDetail = "电话: " + phoneNumber + "\n" + "评价: " + String.format("%.2f", reputationStars) + "星\n"
                                         +"已成功拼车: " + Integer.toString(finishedOrderNumber) +"次" +"\n";
                         //Log.e("userDetail", userDetail);
 

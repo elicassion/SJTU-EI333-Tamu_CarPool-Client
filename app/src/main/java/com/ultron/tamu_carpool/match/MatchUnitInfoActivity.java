@@ -1,6 +1,8 @@
 package com.ultron.tamu_carpool.match;
 
+import android.content.Context;
 import android.content.Intent;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +29,7 @@ public class MatchUnitInfoActivity extends AppCompatActivity implements View.OnC
     private String mDestName;
     private int mSelfQueryNumber;
     private int targetQueryNumber;
+    private Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +42,7 @@ public class MatchUnitInfoActivity extends AppCompatActivity implements View.OnC
                 finish();
             }
         });
+        mContext = this.getApplicationContext();
         initView();
     }
 
@@ -67,8 +71,8 @@ public class MatchUnitInfoActivity extends AppCompatActivity implements View.OnC
 
             String onTheView = "";
             onTheView = onTheView + "ID: " + id + "\n";
-            onTheView = onTheView + "从" + startName + "去往" + destName;
-            onTheView = onTheView + "评价: " + Double.toString(reputation) + "\n";
+            onTheView = onTheView + "从" + startName + "去往" + destName + "\n";
+            onTheView = onTheView + "评价: " + String.format("%.2f", reputation) + "\n";
             onTheView = onTheView + "已完成订单数: " + Integer.toString(finishedOrderNumber) + "\n";
 
             if (target.getUserType() == 2) {

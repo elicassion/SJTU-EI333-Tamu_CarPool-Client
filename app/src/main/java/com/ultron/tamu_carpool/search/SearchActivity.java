@@ -108,9 +108,9 @@ public class SearchActivity extends FragmentActivity implements
     private LatLng destPosition = null;
     private String startName = null;
     private String destName;
-    private String tarTime = null;
-    private Date mTime = null;
-    private Date curTime;
+    private String tarTimeString = null;
+    private Date tarTime = null;
+    private Date appointTime = null;
     private int mPoolType = 1;
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
@@ -256,15 +256,22 @@ public class SearchActivity extends FragmentActivity implements
             ToastUtil.show(mContext, "终点未设定");
             return;
         }
-        if (tarTime == null){
-            if (mPoolType == 1){
+
+        if (mPoolType == 1){
+            if (tarTimeString == null) {
                 Date now = new Date();
-                tarTime = dateFormat.format(now);
-            }
-            else{
-                ToastUtil.show(mContext,"预约拼车请选定时间");
+                tarTimeString = dateFormat.format(now);
             }
         }
+        else{
+            tarTime = appointTime;
+            if (tarTime == null)
+                ToastUtil.show(mContext,"预约拼车请选定时间");
+            else
+                tarTimeString = dateFormat.format(tarTime);
+        }
+
+
         if (startName == null) startName = "当前位置";
         Log.e("press goformatch", "chuo");
         mMatchTask = new MatchTask();
@@ -709,8 +716,8 @@ public class SearchActivity extends FragmentActivity implements
                 String dayOfMonthString = String.format("%02d", dayOfMonth);
                 time = yearString + "/" + monthString + "/" + dayOfMonthString + " " +time;
                 try {
-                    mTime = dateFormat.parse(time);
-                    tarTime = time;
+                    appointTime = dateFormat.parse(time);
+                    //tarTimeString = time;
                 }catch(Exception e){throw new RuntimeException(e);}
 
             }
@@ -728,8 +735,9 @@ public class SearchActivity extends FragmentActivity implements
                 String minuteString = String.format("%02d", minute);
                 time = time + hourOfDayString + ":" + minuteString + ":" + "00";
                 try {
-                    mTime = dateFormat.parse(time);
-                    tarTime = time;
+                    Log.e("appointtime",time);
+                    appointTime = dateFormat.parse(time);
+                    //tarTimeString = time;
                 }catch(Exception e){throw new RuntimeException(e);}
             }
         },12, 0, true);
@@ -740,8 +748,8 @@ public class SearchActivity extends FragmentActivity implements
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         if (checkedId == realTimeBtn.getId()){
             mPoolType = 1;
-            mTime = new Date();
-            tarTime = dateFormat.format(mTime);
+            tarTime = new Date();
+            tarTimeString = dateFormat.format(tarTime);
             setDateBtn.setVisibility(View.INVISIBLE);
             setTimeBtn.setVisibility(View.INVISIBLE);
         }
@@ -764,7 +772,7 @@ public class SearchActivity extends FragmentActivity implements
             if (!interactUtil.socketSuccess){
                 mMatchResult = null;
             }
-            mMatchResult = interactUtil.match(user, mDriveRouteResult, mPoolType, tarTime, startName, destName, mStartPoint, mEndPoint);
+            mMatchResult = interactUtil.match(user, mDriveRouteResult, mPoolType, tarTimeString, startName, destName, mStartPoint, mEndPoint);
             return true;
 
         }
@@ -781,7 +789,7 @@ public class SearchActivity extends FragmentActivity implements
                 matchIntent.putExtra("dest_name", destName);
                 //matchIntent.putExtra("dest_point", mEndPoint);
                 matchIntent.putExtra("pool_type", mPoolType);
-                matchIntent.putExtra("time", tarTime);
+                matchIntent.putExtra("time", tarTimeString);
                 matchIntent.putExtra("user", user);
                 Log.e("putextra matchresult", mMatchResult);
                 matchIntent.putExtra("match_result", mMatchResult);

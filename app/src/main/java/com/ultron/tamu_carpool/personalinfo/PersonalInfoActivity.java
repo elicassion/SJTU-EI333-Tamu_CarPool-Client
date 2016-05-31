@@ -6,17 +6,48 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.usr.User;
+
+import org.json.JSONObject;
+
+import java.security.spec.ECField;
 
 public class PersonalInfoActivity extends AppCompatActivity {
-    private String mUserId;
+    private User user;
+    private TextView mTextView;
+    private String personalInfo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_info);
         Intent intent = getIntent();
-        mUserId = intent.getStringExtra("id");
-        TextView textview = new TextView(this);
-        textview.setText(mUserId);
-        setContentView(textview);
+        user = (User) intent.getSerializableExtra("user");
+        personalInfo = intent.getStringExtra("personal_info");
+        mTextView = (TextView) findViewById(R.id.personal_info_text);
+        try {
+            JSONObject jPersonalInfo = new JSONObject(personalInfo);
+            String name = jPersonalInfo.getString("name");
+            String gender = jPersonalInfo.getString("gender");
+            int age = jPersonalInfo.getInt("age");
+            double reputation = jPersonalInfo.getDouble("reputation");
+            int finishedOrderNumber = jPersonalInfo.getInt("finished_order_number");
+            String text = "";
+            text = text + "姓名: " + name + "\n";
+            text = text + "性别: " + gender + "\n";
+            text = text + "年龄: " + Integer.toString(age) + "\n";
+            text = text + "已完成订单数: " + Integer.toString(finishedOrderNumber) + "\n";
+            text = text + "评价: " + String.format("%.2f", reputation) + "\n";
+            if (user.getUserType() == 2) {
+                String numberPlate = jPersonalInfo.getString("number_plate");
+                String carType = jPersonalInfo.getString("car_type");
+                int maxPassenger = jPersonalInfo.getInt("max_psg");
+                text = text + "车辆信息: \n";
+                text = text + "\t车牌号: " + numberPlate + "\n";
+                text = text + "\t车型: " + carType + "\n";
+                text = text + "\t最多可载: " + Integer.toString(maxPassenger) + "人\n";
+            }
+            mTextView.setText(text);
+        }catch (Exception e){throw new RuntimeException(e);}
+
     }
 }

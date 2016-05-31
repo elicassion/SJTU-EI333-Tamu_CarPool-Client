@@ -4,6 +4,7 @@ import android.app.ActivityGroup;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -44,11 +45,10 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
 
     private int flag = 0; // 通过标记跳转不同的页面，显示不同的菜单项
 
-    private String orderInfo;
-    //private OrderTask mOrderTask;
+    //private String orderInfo;
+    private OrderTask mOrderTask;
     private String personalInfo;
     private PersonalInfoTask mPersonalInfoTask;
-    private OrderTask mOrderTask;
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +70,7 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
             public void run() {
                 try {
                     InteractUtil interactUtil = new InteractUtil();
-                    interactUtil.getMatchConfirm(user);
+                    //interactUtil.getMatchConfirm(user);
                     String backInfo = interactUtil.getMatchConfirm(user);
                     if (backInfo == null) return;
                     JSONObject jBackInfo = new JSONObject(backInfo);
@@ -80,24 +80,24 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                     if (code != 0) {
                         jTarget = jBackInfo.getJSONObject("target");
                         jMyQuery = jBackInfo.getJSONObject("my_query");
-                    }
-                    if (code == 1){//我的匹配得到了确认
-                        Intent intentConfirmedMatch = new Intent(CtrlCenterActivity.this, ConfirmedMatchActivity.class);
-                        intentConfirmedMatch.putExtra("target", jTarget.toString());
-                        intentConfirmedMatch.putExtra("my_query", jMyQuery.toString());
-                        intentConfirmedMatch.putExtra("user", user);
-                        startActivity(intentConfirmedMatch);
-                    }
-                    else if (code == 2){//我有人匹配选择了我
-                        Intent intentAskForConfirm = new Intent(CtrlCenterActivity.this, AskForConfirmActivity.class);
-                        intentAskForConfirm.putExtra("target", jTarget.toString());
-                        intentAskForConfirm.putExtra("my_query", jMyQuery.toString());
-                        //intentAskForConfirm.putExtra("user", user);
-                        startActivity(intentAskForConfirm);
+                        if (code == 1) {//我的匹配得到了确认
+                            Intent intentConfirmedMatch = new Intent(CtrlCenterActivity.this, ConfirmedMatchActivity.class);
+                            intentConfirmedMatch.putExtra("target", jTarget.toString());
+                            intentConfirmedMatch.putExtra("my_query", jMyQuery.toString());
+                            intentConfirmedMatch.putExtra("user", user);
+                            startActivity(intentConfirmedMatch);
+                        } else if (code == 2) {//我有人匹配选择了我
+                            Log.e("incode2", jBackInfo.toString());
+                            Intent intentAskForConfirm = new Intent(CtrlCenterActivity.this, AskForConfirmActivity.class);
+                            intentAskForConfirm.putExtra("target", jTarget.toString());
+                            intentAskForConfirm.putExtra("my_query", jMyQuery.toString());
+                            intentAskForConfirm.putExtra("user", user);
+                            startActivity(intentAskForConfirm);
+                        }
                     }
                 }catch(Exception e){throw new RuntimeException(e);}
             }
-        },5000, 30000);
+        },5000, 5000);
     }
 
     private void initEvent()
@@ -137,10 +137,16 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                 body.addView(v);
                 break;
             case 1:
+//                mOrderTask = new OrderTask();
+//                mOrderTask.execute((Void) null);
                 body.removeAllViews();
-                mOrderTask = new OrderTask();
-                mOrderTask.execute((Void) null);
-
+                //Log.e("inpostexe", orderInfo);
+                Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
+                intentOrderMain.putExtra("user", user);
+                //intentOrderMain.putExtra("order_info", orderInfo);
+                body.addView(getLocalActivityManager().startActivity("odrButton",intentOrderMain
+                ).getDecorView());
+                odrButton.setImageResource(R.drawable.tab_order_pressed);
                 break;
             case 2:
                 body.removeAllViews();
@@ -185,38 +191,6 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
         System.exit(0);
     }
 
-    public class OrderTask extends AsyncTask<Void, Void, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            InteractUtil interactUtil = new InteractUtil();
-            orderInfo = interactUtil.getOrderInfo(user);
-            if (orderInfo != null)
-                return true;
-            else return false;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mOrderTask = null;
-            if (success) {
-                Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
-                intentOrderMain.putExtra("user", user);
-                intentOrderMain.putExtra("order_info", orderInfo);
-                View v = getLocalActivityManager().startActivity("odrButton",intentOrderMain
-                ).getDecorView();
-                odrButton.setImageResource(R.drawable.tab_order_pressed);
-                body.addView(v);
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mOrderTask = null;
-        }
-
-    }
-
 
     public class PersonalInfoTask extends AsyncTask<Void, Void, Boolean> {
         PersonalInfoTask() {
@@ -237,16 +211,46 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
                 Intent intentPersonalInfo = new Intent(CtrlCenterActivity.this, PersonalInfoActivity.class);
                 intentPersonalInfo.putExtra("user", user);
                 intentPersonalInfo.putExtra("personal_info", personalInfo);
-                View v = getLocalActivityManager().startActivity("infButton",intentPersonalInfo
-                ).getDecorView();
+                body.addView(getLocalActivityManager().startActivity("infButton",intentPersonalInfo
+                ).getDecorView());
                 infButton.setImageResource(R.drawable.tab_info_pressed);
-                body.addView(v);
+                //body.addView(v);
             }
         }
 
         @Override
         protected void onCancelled() {
             mPersonalInfoTask = null;
+        }
+
+    }
+
+    public class OrderTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            InteractUtil interactUtil = new InteractUtil();
+            String orderInfo = interactUtil.getOrderInfo(user);
+            return orderInfo;
+        }
+
+        @Override
+        protected void onPostExecute(final String orderInfo) {
+            mOrderTask = null;
+            body.removeAllViews();
+            Log.e("inpostexe", orderInfo);
+            Intent intentOrderMain = new Intent(CtrlCenterActivity.this, OrderMainActivity.class);
+            intentOrderMain.putExtra("user", user);
+            intentOrderMain.putExtra("order_info", orderInfo);
+            body.addView(getLocalActivityManager().startActivity("odrButton",intentOrderMain
+            ).getDecorView());
+            odrButton.setImageResource(R.drawable.tab_order_pressed);
+            //body.addView(v);
+        }
+
+        @Override
+        protected void onCancelled() {
+            mOrderTask = null;
         }
 
     }

@@ -5,23 +5,21 @@
     android:layout_height="100dp"
     android:layout_marginBottom="0dp">
 
+
     <TextView
         android:id="@+id/order_detail_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="#ffffff"
-        android:gravity="center_vertical"
+        android:gravity="bottom"
         android:textColor="#000000" />
     <TextView
         android:id="@+id/order_type_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="3dp"
-        android:background="#ffffff"
-        android:gravity="center_vertical"
+        android:background="#00ffffff"
+        android:gravity="top"
         android:textColor="#000000"/>
-
 
 </RelativeLayout>
 
