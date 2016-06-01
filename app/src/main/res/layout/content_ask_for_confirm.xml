@@ -34,14 +34,18 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="确认"/>
+            android:text="确认"
+            android:background="@color/accent_material_light"
+            android:layout_margin="3dp" />
         <Button
             android:id="@+id/ask_for_confirm_btn_no"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="婉拒"/>
+            android:text="婉拒"
+            android:background="@color/accent_material_light"
+            android:layout_margin="3dp" />
     </LinearLayout>
 
 

@@ -68,6 +68,7 @@ import com.amap.api.services.route.RouteSearch.DriveRouteQuery;
 import com.amap.api.services.route.RouteSearch.OnRouteSearchListener;
 import com.amap.api.services.route.WalkRouteResult;
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
 import com.ultron.tamu_carpool.match.MatchDetailActivity;
 import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.AMapUtil;
@@ -137,6 +138,7 @@ public class SearchActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarCompat.compat(this, 0xFF009688);
         setContentView(R.layout.activity_search);
         Intent faIntent = getIntent();
         user = (User)faIntent.getSerializableExtra("user");

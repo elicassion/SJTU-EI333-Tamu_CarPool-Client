@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
 import com.ultron.tamu_carpool.comment.CommentActivity;
 import com.ultron.tamu_carpool.match.MatchDetailActivity;
 import com.ultron.tamu_carpool.match.MatchUnitInfoActivity;
@@ -39,9 +40,11 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarCompat.compat(this, 0xFF009688);
         setContentView(R.layout.activity_order_unit_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_order_unit_info_toolbar);
-        setSupportActionBar(toolbar);
+        //setSupportActionBar(toolbar);
+        toolbar.setTitle("订单详情");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,21 +144,31 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
                     //else text3 = text3 + "预约拼车:\n";
                     text3 = text3 + "车主: " + cId2 + "\n\t" + cTime2 + " 从 " + cStartName2 + "去往 " + cDestName2 + "\n";
                     text3 = text3 + "乘客: " + pId2 + "\n\t" + pTime2 + " 从 " + pStartName2 + "去往 " + pDestName2 + "\n";
-                    text3 = text3 + "乘客对车主的评价:\n\t";
+                    text3 = text3 + "\n乘客对车主的评价:\n\t";
                     text3 = text3 + cComment + "\n";
                     text3 = text3+ "评分:" + String.format("%.2f", cReputation) + "分\n";
-                    text3 = text3 + "车主对乘客的评价:\n\t";
+                    text3 = text3 + "\n车主对乘客的评价:\n\t";
                     text3 = text3 + pComment + "\n";
                     text3 = text3+ "评分" + String.format("%.2f", pReputation) + "分\n";
 
                     //text3 = text3 + comment;
-                    if (mUser.getUserType() == 1 && !ifPassengerComment
-                            || mUser.getUserType() == 2 && !ifCarComment) {
-                        mUnitGoBtn.setText("去评价");
-                        mUnitGoBtn.setOnClickListener(this);
+                    if (mUser.getUserType() == 1 ){
+                        if (!ifPassengerComment) {
+                            mUnitGoBtn.setText("去评价");
+                            mUnitGoBtn.setOnClickListener(this);
+                        }
+                        else {
+                            mUnitGoBtn.setText("已评价");
+                        }
                     }
                     else{
-                        mUnitGoBtn.setText("已评价");
+                        if (!ifCarComment) {
+                            mUnitGoBtn.setText("去评价");
+                            mUnitGoBtn.setOnClickListener(this);
+                        }
+                        else {
+                            mUnitGoBtn.setText("已评价");
+                        }
                     }
                     mOrderNumber = orderNumber2;
                     mUnitDetail.setText(text3);

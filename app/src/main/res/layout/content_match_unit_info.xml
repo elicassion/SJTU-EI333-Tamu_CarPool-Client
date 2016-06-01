@@ -33,7 +33,9 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:id="@+id/match_confirm"
-            android:text="确认拼车"/>
+            android:text="确认拼车"
+            android:background="@color/accent_material_light"
+            android:layout_margin="3dp" />
     </LinearLayout>
 
 </LinearLayout>

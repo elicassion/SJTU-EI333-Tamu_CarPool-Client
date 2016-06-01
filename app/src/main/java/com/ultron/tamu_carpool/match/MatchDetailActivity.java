@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.DriveRouteResult;
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
 import com.ultron.tamu_carpool.ctrlcenter.CtrlCenterActivity;
 import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.InteractUtil;
@@ -62,10 +63,11 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarCompat.compat(this, 0xFF009688);
         setContentView(R.layout.activity_match_detail);
         toolbar = (Toolbar) findViewById(R.id.activity_match_detail_toolbar);
-        setSupportActionBar(toolbar);
-        //toolBarLayout.setTitle(getTitle());
+        toolbar.setTitle("匹配结果");
+        //setSupportActionBar(toolbar);
 
         mDetailsView = (ViewGroup)findViewById(R.id.match_detail_select);
         mRouteInfo = (TextView) findViewById(R.id.route_info);

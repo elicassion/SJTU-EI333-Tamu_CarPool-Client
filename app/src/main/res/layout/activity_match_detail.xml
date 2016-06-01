@@ -21,7 +21,6 @@
             />
 
     </android.support.design.widget.AppBarLayout>
-
     <TextView
         android:id="@+id/route_info"
         android:layout_width="match_parent"
@@ -43,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
-            android:background="#ffffff"
+            android:background="@drawable/content_bar"
             android:orientation="vertical"
             android:padding="3dp" >
         </LinearLayout>

@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
 import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.InteractUtil;
 
@@ -22,9 +23,11 @@ public class ConfirmedMatchActivity extends AppCompatActivity implements View.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarCompat.compat(this, 0xFF009688);
         setContentView(R.layout.activity_confirmed_match);
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_confirmed_match_toolbar);
-        setSupportActionBar(toolbar);
+        toolbar.setTitle("拼车成功！");
+        //setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

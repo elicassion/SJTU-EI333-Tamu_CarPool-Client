@@ -12,6 +12,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
 import com.ultron.tamu_carpool.confirm.AskForConfirmActivity;
 import com.ultron.tamu_carpool.confirm.ConfirmedMatchActivity;
 import com.ultron.tamu_carpool.order.OrderMainActivity;
@@ -53,6 +54,7 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarCompat.compat(this, 0xFF009688);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_ctrl_center);
         Intent faIntent = getIntent();

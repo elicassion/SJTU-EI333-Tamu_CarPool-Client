@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="maintitle">TAMU CAR POOL</string>
+    <string name="maintitle">Tahm Car Pool</string>
     <string name="user_idps_file_name">idps.tm</string>
     <string name="animate">Animate</string>
     <string name="basic_map">基本地图</string>

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
 import com.ultron.tamu_carpool.util.InteractUtil;
 
 
@@ -67,6 +68,7 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarCompat.compat(this, 0xFF009688);
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mPhoneNumberView = (AutoCompleteTextView) findViewById(R.id.phone_number);

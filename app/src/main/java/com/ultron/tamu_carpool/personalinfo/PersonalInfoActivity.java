@@ -3,9 +3,11 @@ package com.ultron.tamu_carpool.personalinfo;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
 import com.ultron.tamu_carpool.usr.User;
 
 import org.json.JSONObject;
@@ -19,7 +21,10 @@ public class PersonalInfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarCompat.compat(this, 0xFF009688);
         setContentView(R.layout.activity_personal_info);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_personal_info_toolbar);
+        toolbar.setTitle("个人信息");
         Intent intent = getIntent();
         user = (User) intent.getSerializableExtra("user");
         personalInfo = intent.getStringExtra("personal_info");
