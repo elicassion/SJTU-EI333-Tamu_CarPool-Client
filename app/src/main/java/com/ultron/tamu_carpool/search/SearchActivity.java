@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.media.Image;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
@@ -138,7 +139,8 @@ public class SearchActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.compat(this, 0xFF009688);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            StatusBarCompat.compat(this, 0xFF80CBC4);
         setContentView(R.layout.activity_search);
         Intent faIntent = getIntent();
         user = (User)faIntent.getSerializableExtra("user");

@@ -3,6 +3,7 @@ package com.ultron.tamu_carpool.ctrlcenter;
 import android.app.ActivityGroup;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -54,7 +55,8 @@ public class CtrlCenterActivity extends ActivityGroup implements OnClickListener
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.compat(this, 0xFF009688);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            StatusBarCompat.compat(this, 0xFF80CBC4);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_ctrl_center);
         Intent faIntent = getIntent();

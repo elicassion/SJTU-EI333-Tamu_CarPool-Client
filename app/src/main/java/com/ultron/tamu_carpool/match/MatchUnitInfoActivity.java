@@ -2,6 +2,7 @@ package com.ultron.tamu_carpool.match;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,7 +35,8 @@ public class MatchUnitInfoActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.compat(this, 0xFF009688);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            StatusBarCompat.compat(this, 0xFF80CBC4);
         setContentView(R.layout.activity_match_unit_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_order_unit_info_toolbar);
         toolbar.setTitle("详细信息");

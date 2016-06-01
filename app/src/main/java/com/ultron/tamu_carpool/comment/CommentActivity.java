@@ -2,6 +2,7 @@ package com.ultron.tamu_carpool.comment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -34,7 +35,9 @@ public class CommentActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.compat(this, 0xFF009688);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            StatusBarCompat.compat(this, 0xFF80CBC4);
+
         setContentView(R.layout.activity_comment);
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_comment_toolbar);
         setSupportActionBar(toolbar);

@@ -3,6 +3,7 @@ package com.ultron.tamu_carpool.order;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -40,7 +41,8 @@ public class OrderUnitInfoActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.compat(this, 0xFF009688);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            StatusBarCompat.compat(this, 0xFF80CBC4);
         setContentView(R.layout.activity_order_unit_info);
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_order_unit_info_toolbar);
         //setSupportActionBar(toolbar);

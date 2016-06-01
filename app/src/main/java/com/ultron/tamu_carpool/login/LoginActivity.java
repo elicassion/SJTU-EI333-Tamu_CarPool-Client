@@ -68,7 +68,8 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.compat(this, 0xFF009688);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            StatusBarCompat.compat(this, 0xFF80CBC4);
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mPhoneNumberView = (AutoCompleteTextView) findViewById(R.id.phone_number);

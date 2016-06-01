@@ -31,7 +31,7 @@ public class AskForConfirmActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.compat(this, 0xFF009688);
+        StatusBarCompat.compat(this, 0xFF80CBC4);
         setContentView(R.layout.activity_ask_for_confirm);
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_ask_for_confirm_toolbar);
         toolbar.setTitle("请求确认");

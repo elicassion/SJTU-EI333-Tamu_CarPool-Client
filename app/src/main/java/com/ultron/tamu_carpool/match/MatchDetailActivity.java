@@ -63,7 +63,8 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StatusBarCompat.compat(this, 0xFF009688);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            StatusBarCompat.compat(this, 0xFF80CBC4);
         setContentView(R.layout.activity_match_detail);
         toolbar = (Toolbar) findViewById(R.id.activity_match_detail_toolbar);
         toolbar.setTitle("匹配结果");
