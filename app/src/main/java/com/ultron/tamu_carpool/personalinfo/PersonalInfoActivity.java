@@ -5,6 +5,7 @@ import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.ultron.tamu_carpool.R;
@@ -19,6 +20,7 @@ public class PersonalInfoActivity extends AppCompatActivity {
     private User user;
     private TextView mTextView;
     private String personalInfo;
+    private Button completeButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +33,7 @@ public class PersonalInfoActivity extends AppCompatActivity {
         user = (User) intent.getSerializableExtra("user");
         personalInfo = intent.getStringExtra("personal_info");
         mTextView = (TextView) findViewById(R.id.personal_info_text);
+        completeButton = (Button) findViewById(R.id.complete_personal_info_btn);
         try {
             JSONObject jPersonalInfo = new JSONObject(personalInfo);
             String name = jPersonalInfo.getString("name");

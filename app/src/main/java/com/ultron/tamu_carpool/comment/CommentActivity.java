@@ -41,6 +41,7 @@ public class CommentActivity extends AppCompatActivity
         setContentView(R.layout.activity_comment);
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_comment_toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setTitle("评价订单");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

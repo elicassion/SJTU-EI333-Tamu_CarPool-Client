@@ -46,7 +46,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     private String mStartName;
     private LatLonPoint mStartPoint;
     private LatLonPoint mEndPoint;
-    private TextView mRouteInfo;
+    //private TextView mRouteInfo;
     private Context mContext;
 
     private String mMatchResult;
@@ -71,7 +71,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
         //setSupportActionBar(toolbar);
 
         mDetailsView = (ViewGroup)findViewById(R.id.match_detail_select);
-        mRouteInfo = (TextView) findViewById(R.id.route_info);
+        //mRouteInfo = (TextView) findViewById(R.id.route_info);
         mContext = this.getApplicationContext();
         getDriveRouteResultFromSearch();
         beginMatch();
@@ -94,7 +94,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
         Log.e("matchdetail activity", mMatchResult);
 
 
-        mRouteInfo.setText("从:"+mStartName+"\n去往: " + mDestName);
+        //mRouteInfo.setText("从:"+mStartName+"\n去往: " + mDestName);
 
     }
 

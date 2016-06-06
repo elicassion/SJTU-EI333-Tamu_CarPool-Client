@@ -28,7 +28,8 @@ import java.util.Set;
 public class InteractUtil {
     private enum COMMAND{
         LOGIN(0), GET_USERTYPE(1), UPDATE_LOCATION(14), MATCH_CONFIRM(13),GET_CONFIRM(15), MATCH(12),
-        GET_ORDER_INFO(18), GET_PERSONAL_INFO(20), REMATCH(16), CONFIRM_ARRIVE(17), ADD_COMMENT(19);
+        GET_ORDER_INFO(18), GET_PERSONAL_INFO(20), REMATCH(16), CONFIRM_ARRIVE(17), ADD_COMMENT(19),
+        SIGN_UP(21);
         private int nCode;
 
 
@@ -40,7 +41,9 @@ public class InteractUtil {
     }
 
 
-    private static final String serverIP = "192.168.3.15";
+    //private static final String serverIP = "192.168.3.15";    //wireless
+    //private static final String serverIP = "10.185.41.81";    //sjtu
+    private static final String serverIP = "192.168.3.28";      //wire
     private static String mUserID = null;
     private static int mUserType = 0;
     private static final int serverPort = 54321;
@@ -442,6 +445,22 @@ public class InteractUtil {
         }catch(Exception e){throw new RuntimeException(e);}
     }
 
+    public int signUp(String pn, String pw, int ut, String ftn, String ltn){
+        try{
+            JSONObject jSignUp = new JSONObject();
+            jSignUp.put("command", COMMAND.SIGN_UP.nCode);
+            jSignUp.put("phone_number", pn);
+            jSignUp.put("password", pw);
+            jSignUp.put("user_type", ut);
+            jSignUp.put("first_name", ftn);
+            jSignUp.put("last_name", ltn);
+            send.println(jSignUp.toString());
+            String backInfo = back.readLine();
+            JSONObject jBackInfo = new JSONObject(backInfo);
+            int code = jBackInfo.getInt("code");
+            return code;
+        }catch(Exception e){throw new RuntimeException(e);}
+    }
 
 
 }

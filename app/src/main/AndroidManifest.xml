@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ultron.tamu_carpool"
+    android:theme="@android:style/Theme.Translucent.NoTitleBar"
     android:versionCode="1"
-    android:versionName="1.0"
-    android:theme="@android:style/Theme.Translucent.NoTitleBar">
+    android:versionName="1.0">
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -26,7 +26,6 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
 
@@ -84,7 +83,6 @@
             android:name=".order.OrderMainActivity"
             android:label="@string/title_activity_order_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".pay.PayActivity" />
         <activity
             android:name=".comment.CommentActivity"
             android:label="CommentActivity"
@@ -113,7 +111,12 @@
         <activity
             android:name=".confirm.AskForConfirmActivity"
             android:label="@string/title_activity_ask_for_confirm"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".signup.SignUpActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="SignUpActivity">
+        </activity>
     </application>
 
 </manifest>

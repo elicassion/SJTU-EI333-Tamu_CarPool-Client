@@ -41,7 +41,8 @@
             android:id="@+id/submit_button"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="提交"/>
+            android:text="提交"
+            android:background="@color/accent_material_light"/>
 
     </LinearLayout>
 </LinearLayout>

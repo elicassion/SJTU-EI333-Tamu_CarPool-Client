@@ -39,7 +39,7 @@
     <ScrollView
         android:id="@+id/login_form"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="260dp"
         android:layout_gravity="center"
         android:clickable="true"
         android:layout_marginBottom="60dp">
@@ -59,7 +59,7 @@
                     android:id="@+id/phone_number"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/prompt_phone_number"
+                    android:hint="手机号"
                     android:inputType="phone"
                     android:maxLines="1"
                     android:singleLine="true"
@@ -75,7 +75,7 @@
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/prompt_password"
+                    android:hint="密码"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in"
                     android:imeOptions="actionUnspecified"
@@ -91,9 +91,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/action_sign_in"
+                android:text="登录"
                 android:textStyle="bold"
-                android:background="@color/accent_material_light" />
+                android:background="@color/accent_material_light"
+                />
+            <Button
+                android:id="@+id/sign_up_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="注册"
+                android:textStyle="bold"
+                android:background="@color/accent_material_light"
+                />
 
         </LinearLayout>
     </ScrollView>
