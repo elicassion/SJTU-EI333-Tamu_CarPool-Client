@@ -3,6 +3,7 @@ package com.ultron.tamu_carpool.personalinfo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
 import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.InteractUtil;
 import com.ultron.tamu_carpool.util.ToastUtil;
@@ -41,6 +43,8 @@ public class CompleteActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_complete);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            StatusBarCompat.compat(this, 0xFF80CBC4);
         mContext = getBaseContext();
         initView();
     }

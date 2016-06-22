@@ -18,7 +18,6 @@ public class Order {
     public void initByJSON(JSONObject order, int userType){
         try {
             jOrder = order;
-            time = jOrder.getString("time");
             if (userType == 1){
                 time = jOrder.getJSONObject("passenger").getString("time");
             }
@@ -36,12 +35,12 @@ public class Order {
                 Date d1 = mq1.getDate();
                 Date d2 = mq2.getDate();
                 if (d1.after(d2)){
-                    return 1;
+                    return -1;
                 }
                 else if (d1.equals(d2)){
                     return 0;
                 }
-                else return -1;
+                else return 1;
 
             }catch(Exception e){throw new RuntimeException(e);}
         }

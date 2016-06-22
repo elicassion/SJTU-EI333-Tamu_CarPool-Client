@@ -49,6 +49,7 @@ import com.amap.api.maps2d.model.LatLngBounds;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
+import com.amap.api.maps2d.model.Text;
 import com.amap.api.maps2d.overlay.DrivingRouteOverlay;
 import com.amap.api.maps2d.overlay.PoiOverlay;
 import com.amap.api.services.core.LatLonPoint;
@@ -137,6 +138,7 @@ public class SearchActivity extends FragmentActivity implements
     private RadioButton realTimeBtn, appointmentBtn;
     private Button setDateBtn, setTimeBtn;
     private EditText passengerNumberInput;
+    private TextView passengerNumberInputHint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,7 +194,13 @@ public class SearchActivity extends FragmentActivity implements
         realTimeBtn.setChecked(true);
         poolTypeRadioGroup.setOnCheckedChangeListener(this);
 
+
         passengerNumberInput = (EditText)findViewById(R.id.passenger_number);
+        passengerNumberInputHint = (TextView)findViewById(R.id.passenger_number_hint);
+        if (user.getUserType() == 2){
+            passengerNumberInput.setVisibility(View.GONE);
+            passengerNumberInputHint.setVisibility(View.GONE);
+        }
 
         aMap.setOnMarkerClickListener(this);// 添加点击marker监听事件
         aMap.setInfoWindowAdapter(this);// 添加显示infowindow监听事件

@@ -111,6 +111,9 @@ public class OrderMainActivity extends AppCompatActivity
             else
                 jHasDone = null;
             int allNumber = 0;
+            matchQueryList.clear();
+            matchedOrderList.clear();
+            finishedOrderList.clear();
             if (jUnMatched != null) {
                 for (int i = 0; i < jUnMatched.length(); ++i){
                     JSONObject jQuery = (JSONObject) jUnMatched.opt(i);
