@@ -38,7 +38,10 @@ import com.ultron.tamu_carpool.util.ToastUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class OrderMainActivity extends AppCompatActivity
@@ -57,6 +60,9 @@ public class OrderMainActivity extends AppCompatActivity
     private int hasDoneNumber = 0;
     private Map<Integer, Integer> orderNumberMap = new HashMap<Integer, Integer>();
     private Map<Integer, Integer> orderTypeMap = new HashMap<Integer, Integer>();
+    private List<MatchQuery> matchQueryList = new ArrayList<MatchQuery>();
+    private List<Order> matchedOrderList = new ArrayList<Order>();
+    private List<Order> finishedOrderList = new ArrayList<Order>();
     private OrderTask mOrderTask = null;
     private String orderInfoString;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -106,9 +112,16 @@ public class OrderMainActivity extends AppCompatActivity
                 jHasDone = null;
             int allNumber = 0;
             if (jUnMatched != null) {
-                for (int i = 0; i < jUnMatched.length(); ++i) {
-                    ++allNumber;//++unMatchedNumber;
+                for (int i = 0; i < jUnMatched.length(); ++i){
                     JSONObject jQuery = (JSONObject) jUnMatched.opt(i);
+                    MatchQuery mq = new MatchQuery();
+                    mq.initByJSON(jQuery);
+                    matchQueryList.add(mq);
+                }
+                Collections.sort(matchQueryList, new MatchQuery.ComparatorValues());
+                for (int i = 0; i < matchQueryList.size(); ++i) {
+                    ++allNumber;//++unMatchedNumber;
+                    JSONObject jQuery = matchQueryList.get(i).getJQuery();
                     Log.e("jquery", jQuery.toString());
                     //String time = jQuery.getString("time");
                     //String startName = jQuery.getString("start_name");
@@ -137,9 +150,16 @@ public class OrderMainActivity extends AppCompatActivity
                 }
             }
             if (jHasMatched != null) {
-                for (int i = 0; i < jHasMatched.length(); ++i) {
-                    ++allNumber;//++hasMatchedNumber;
+                for (int i = 0; i < jHasMatched.length(); ++i){
                     JSONObject jOrder = (JSONObject) jHasMatched.opt(i);
+                    Order ord = new Order();
+                    ord.initByJSON(jOrder, user.getUserType());
+                    matchedOrderList.add(ord);
+                }
+                Collections.sort(matchedOrderList, new Order.ComparatorValues());
+                for (int i = 0; i < matchedOrderList.size(); ++i) {
+                    ++allNumber;//++hasMatchedNumber;
+                    JSONObject jOrder = matchedOrderList.get(i).getJOrder();
                     //Log.e("jorder", jOrder.toString());
                     int orderNumber = jOrder.getInt("order_number");
                     orderNumberMap.put(allNumber, orderNumber);
@@ -176,9 +196,16 @@ public class OrderMainActivity extends AppCompatActivity
                 }
             }
             if (jHasDone != null) {
-                for (int i = 0; i < jHasDone.length(); ++i) {
-                    ++allNumber;//++hasDoneNumber;
+                for (int i = 0; i < jHasDone.length(); ++i){
                     JSONObject jOrder = (JSONObject) jHasDone.opt(i);
+                    Order ord = new Order();
+                    ord.initByJSON(jOrder, user.getUserType());
+                    finishedOrderList.add(ord);
+                }
+                Collections.sort(finishedOrderList, new Order.ComparatorValues());
+                for (int i = 0; i < finishedOrderList.size(); ++i) {
+                    ++allNumber;//++hasDoneNumber;
+                    JSONObject jOrder = finishedOrderList.get(i).getJOrder();
                     Log.e("jorder", jOrder.toString());
                     int orderNumber = jOrder.getInt("order_number");
                     orderNumberMap.put(allNumber, orderNumber);
@@ -228,13 +255,13 @@ public class OrderMainActivity extends AppCompatActivity
             int orderNumber = orderNumberMap.get(viewNumber);
             int innerNumber;
             if (orderType == 1) {
-                JSONObject jQuery = (JSONObject) jUnMatched.opt(viewNumber - 1);
+                JSONObject jQuery = matchQueryList.get(viewNumber - 1).getJQuery();
                 showMoreInfo(jQuery, 1);
             } else if (orderType == 2) {
-                JSONObject jOrder = (JSONObject) jHasMatched.opt(viewNumber - unMatchedNumber - 1);
+                JSONObject jOrder = matchedOrderList.get(viewNumber - unMatchedNumber - 1).getJOrder();
                 showMoreInfo(jOrder, 2);
             } else {
-                JSONObject jOrder = (JSONObject) jHasDone.opt(viewNumber - unMatchedNumber - hasMatchedNumber - 1);
+                JSONObject jOrder = finishedOrderList.get(viewNumber - unMatchedNumber - hasMatchedNumber - 1).getJOrder();
                 showMoreInfo(jOrder, 3);
             }
         }catch(Exception e){throw new RuntimeException(e);}

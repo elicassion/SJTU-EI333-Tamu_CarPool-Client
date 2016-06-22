@@ -114,9 +114,12 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".signup.SignUpActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="SignUpActivity">
-        </activity>
+            android:label="SignUpActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
+            android:name=".personalinfo.CompleteActivity"
+            android:label="CompleteActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

@@ -114,6 +114,7 @@ public class SearchActivity extends FragmentActivity implements
     private Date tarTime = null;
     private Date appointTime = null;
     private int mPoolType = 1;
+    private int mPassengerNumber = 1;
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
 
@@ -132,9 +133,10 @@ public class SearchActivity extends FragmentActivity implements
     private String mMatchResult;
 
     private Timer updateLocTimer;
-    RadioGroup poolTypeRadioGroup;
-    RadioButton realTimeBtn, appointmentBtn;
-    Button setDateBtn, setTimeBtn;
+    private RadioGroup poolTypeRadioGroup;
+    private RadioButton realTimeBtn, appointmentBtn;
+    private Button setDateBtn, setTimeBtn;
+    private EditText passengerNumberInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,6 +191,8 @@ public class SearchActivity extends FragmentActivity implements
         setTimeBtn.setOnClickListener(this);
         realTimeBtn.setChecked(true);
         poolTypeRadioGroup.setOnCheckedChangeListener(this);
+
+        passengerNumberInput = (EditText)findViewById(R.id.passenger_number);
 
         aMap.setOnMarkerClickListener(this);// 添加点击marker监听事件
         aMap.setInfoWindowAdapter(this);// 添加显示infowindow监听事件
@@ -269,14 +273,22 @@ public class SearchActivity extends FragmentActivity implements
         }
         else{
             tarTime = appointTime;
-            if (tarTime == null)
-                ToastUtil.show(mContext,"预约拼车请选定时间");
+            if (tarTime == null) {
+                ToastUtil.show(mContext, "预约拼车请选定时间");
+                return;
+            }
             else
                 tarTimeString = dateFormat.format(tarTime);
         }
 
 
         if (startName == null) startName = "当前位置";
+
+        mPassengerNumber = Integer.parseInt(passengerNumberInput.getText().toString());
+        if (mPassengerNumber < 1){
+            ToastUtil.show(mContext, "拼车人数不能少于1");
+            return;
+        }
         Log.e("press goformatch", "chuo");
         mMatchTask = new MatchTask();
         mMatchTask.execute((Void) null);
@@ -776,7 +788,7 @@ public class SearchActivity extends FragmentActivity implements
             if (!interactUtil.socketSuccess){
                 mMatchResult = null;
             }
-            mMatchResult = interactUtil.match(user, mDriveRouteResult, mPoolType, tarTimeString, startName, destName, mStartPoint, mEndPoint);
+            mMatchResult = interactUtil.match(user, mDriveRouteResult, mPoolType, tarTimeString, startName, destName, mStartPoint, mEndPoint, mPassengerNumber);
             return true;
 
         }

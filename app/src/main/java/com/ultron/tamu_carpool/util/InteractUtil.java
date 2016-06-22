@@ -29,7 +29,7 @@ public class InteractUtil {
     private enum COMMAND{
         LOGIN(0), GET_USERTYPE(1), UPDATE_LOCATION(14), MATCH_CONFIRM(13),GET_CONFIRM(15), MATCH(12),
         GET_ORDER_INFO(18), GET_PERSONAL_INFO(20), REMATCH(16), CONFIRM_ARRIVE(17), ADD_COMMENT(19),
-        SIGN_UP(21);
+        SIGN_UP(21), COMPLETE_INFO(22);
         private int nCode;
 
 
@@ -42,7 +42,7 @@ public class InteractUtil {
 
 
     //private static final String serverIP = "192.168.3.15";    //wireless
-    //private static final String serverIP = "10.185.41.81";    //sjtu
+    //private static final String serverIP = "10.185.93.111";    //sjtu
     private static final String serverIP = "192.168.3.28";      //wire
     private static String mUserID = null;
     private static int mUserType = 0;
@@ -297,7 +297,7 @@ public class InteractUtil {
 
     }
 
-    public String match(User user, DriveRouteResult result, int poolType, String time, String startName, String endName, LatLonPoint startPoint, LatLonPoint endPoint){
+    public String match(User user, DriveRouteResult result, int poolType, String time, String startName, String endName, LatLonPoint startPoint, LatLonPoint endPoint, int passengerNumber){
         //上传到服务器 保存本次请求 包括请求人、路径、类型、请求、起终点名字
         DrivePath path = result.getPaths().get(0);
         List<DriveStep> steps = path.getSteps();
@@ -338,6 +338,7 @@ public class InteractUtil {
             jMatchQuery.put("end_name", endName);
             jMatchQuery.put("start_point", jStartPoint);//object
             jMatchQuery.put("end_point", jEndPoint);//object
+            jMatchQuery.put("passenger_number", passengerNumber);
             send.println(jMatchQuery.toString());
             String backInfo = null;
             backInfo = back.readLine();
@@ -459,6 +460,21 @@ public class InteractUtil {
             JSONObject jBackInfo = new JSONObject(backInfo);
             int code = jBackInfo.getInt("code");
             return code;
+        }catch(Exception e){throw new RuntimeException(e);}
+    }
+
+    public void completeInfo(User user, String idNumber, String driveIdNumber, String carType, int maxPsg, String numberPlate){
+        try{
+            JSONObject jCompleteInfo = new JSONObject();
+            jCompleteInfo.put("id", user.getID());
+            jCompleteInfo.put("user_type", user.getUserType());
+            jCompleteInfo.put("idcard_number", idNumber);
+            jCompleteInfo.put("drive_idnumber", driveIdNumber);
+            jCompleteInfo.put("car_type", carType);
+            jCompleteInfo.put("max_psg", maxPsg);
+            jCompleteInfo.put("number_plate", numberPlate);
+            jCompleteInfo.put("command", COMMAND.COMPLETE_INFO.nCode);
+            send.println(jCompleteInfo.toString());
         }catch(Exception e){throw new RuntimeException(e);}
     }
 

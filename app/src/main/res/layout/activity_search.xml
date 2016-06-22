@@ -81,9 +81,24 @@
         android:layout_height="40dp"
         android:background="@color/accent_material_dark"
         android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="人数"
+            android:layout_gravity="center"/>
+        <EditText
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/passenger_number"
+            android:background="@color/accent_material_dark"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="1"
+            android:inputType="number"/>
         <RadioGroup
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="horizontal"
             android:background="@color/transparent"
             android:id="@+id/pool_type_select"
@@ -104,7 +119,7 @@
                 android:background="@color/transparent"/>
         </RadioGroup>
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="40dp"
             android:layout_height="match_parent"
             android:id="@+id/set_time"
             android:layout_weight="1"
@@ -113,9 +128,9 @@
             android:visibility="invisible"
             android:background="@color/accent_material_light"
             android:layout_margin="6dp"
-            android:layout_gravity="left" />
+            android:layout_gravity="center" />
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="40dp"
             android:layout_height="match_parent"
             android:id="@+id/set_date"
             android:layout_weight="1"
@@ -124,8 +139,9 @@
             android:visibility="invisible"
             android:background="@color/accent_material_light"
             android:layout_margin="6dp"
-            android:layout_gravity="left" />
+            android:layout_gravity="center" />
     </LinearLayout>
+
 
     <RelativeLayout
         android:id="@+id/bottom_layout"

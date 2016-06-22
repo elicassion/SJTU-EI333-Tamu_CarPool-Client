@@ -5,6 +5,7 @@ import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -16,7 +17,8 @@ import org.json.JSONObject;
 
 import java.security.spec.ECField;
 
-public class PersonalInfoActivity extends AppCompatActivity {
+public class PersonalInfoActivity extends AppCompatActivity
+    implements View.OnClickListener{
     private User user;
     private TextView mTextView;
     private String personalInfo;
@@ -34,6 +36,7 @@ public class PersonalInfoActivity extends AppCompatActivity {
         personalInfo = intent.getStringExtra("personal_info");
         mTextView = (TextView) findViewById(R.id.personal_info_text);
         completeButton = (Button) findViewById(R.id.complete_personal_info_btn);
+        completeButton.setOnClickListener(this);
         try {
             JSONObject jPersonalInfo = new JSONObject(personalInfo);
             String name = jPersonalInfo.getString("name");
@@ -59,5 +62,15 @@ public class PersonalInfoActivity extends AppCompatActivity {
             mTextView.setText(text);
         }catch (Exception e){throw new RuntimeException(e);}
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.complete_personal_info_btn:
+                Intent completeActivityIntent= new Intent(PersonalInfoActivity.this, CompleteActivity.class);
+                completeActivityIntent.putExtra("user", user);
+                startActivity(completeActivityIntent);
+        }
     }
 }
