@@ -1,5 +1,6 @@
 package com.ultron.tamu_carpool;
 
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.app.ListActivity;
 import android.content.Context;
@@ -7,6 +8,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -16,6 +19,7 @@ import com.amap.api.maps2d.MapsInitializer;
 import com.ultron.tamu_carpool.login.LoginActivity;
 import com.ultron.tamu_carpool.ctrlcenter.CtrlCenterActivity;
 import com.ultron.tamu_carpool.usr.User;
+import com.ultron.tamu_carpool.StatusBarCompat;
 public class MainActivity extends AppCompatActivity {
 
     private String user_id;
@@ -28,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intentlogin, 1);
         //startActivity(new Intent(MainActivity.this,LoginActivity.class));
         //LoginActivity.finish();
-
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -43,6 +47,5 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intentCtrlCenter);
         }
     }
-
 
 }

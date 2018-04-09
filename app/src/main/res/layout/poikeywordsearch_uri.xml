@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="vertical" >
 
     <TextView
@@ -17,27 +17,28 @@
         android:id="@+id/snippet"
         android:layout_width="200dip"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/title"
         android:textColor="@android:color/black" />
 
     <!--TODO:change this image-->
-    <ImageButton
-        android:id="@+id/set_start_point"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@id/snippet"
-        android:background="@drawable/start_uri" />
-    <ImageButton
-        android:id="@+id/set_dest_point"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:background="@drawable/start_uri"
-        android:layout_toLeftOf="@id/set_start_point"/>
+        android:layout_below="@+id/snippet"
+        android:orientation="horizontal">
+        <ImageButton
+            android:id="@+id/set_start_point"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/start_uri" />
+        <ImageButton
+            android:id="@+id/set_dest_point"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/dest_uri"/>
+    </LinearLayout>
+
 
 </RelativeLayout>

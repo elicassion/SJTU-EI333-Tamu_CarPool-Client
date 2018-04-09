@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.DriveRouteResult;
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
 import com.ultron.tamu_carpool.ctrlcenter.CtrlCenterActivity;
 import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.InteractUtil;
@@ -45,7 +46,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     private String mStartName;
     private LatLonPoint mStartPoint;
     private LatLonPoint mEndPoint;
-    private TextView mRouteInfo;
+    //private TextView mRouteInfo;
     private Context mContext;
 
     private String mMatchResult;
@@ -62,28 +63,16 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            StatusBarCompat.compat(this, 0xFF80CBC4);
         setContentView(R.layout.activity_match_detail);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-        toolBarLayout.setTitle(getTitle());
-
-
-
-        //TODO:辣鸡button 可以脑洞改
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
+        toolbar = (Toolbar) findViewById(R.id.activity_match_detail_toolbar);
+        toolbar.setTitle("匹配结果");
+        //setSupportActionBar(toolbar);
 
         mDetailsView = (ViewGroup)findViewById(R.id.match_detail_select);
-        mRouteInfo = (TextView) findViewById(R.id.route_info);
-
+        //mRouteInfo = (TextView) findViewById(R.id.route_info);
+        mContext = this.getApplicationContext();
         getDriveRouteResultFromSearch();
         beginMatch();
     }
@@ -105,7 +94,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
         Log.e("matchdetail activity", mMatchResult);
 
 
-        mRouteInfo.setText("从:"+mStartName+"\n去往: " + mDestName);
+        //mRouteInfo.setText("从:"+mStartName+"\n去往: " + mDestName);
 
     }
 
@@ -131,7 +120,7 @@ public class MatchDetailActivity extends AppCompatActivity implements View.OnCli
                         String phoneNumber = jUser.getString("id");
                         double reputationStars = jUser.getDouble("reputation");
                         int finishedOrderNumber = jUser.getInt("finished_order_number");
-                        userDetail = "电话: " + phoneNumber + "\n" + "评价: " + Double.toString(reputationStars) + "星\n"
+                        userDetail = "电话: " + phoneNumber + "\n" + "评价: " + String.format("%.2f", reputationStars) + "星\n"
                                         +"已成功拼车: " + Integer.toString(finishedOrderNumber) +"次" +"\n";
                         //Log.e("userDetail", userDetail);
 

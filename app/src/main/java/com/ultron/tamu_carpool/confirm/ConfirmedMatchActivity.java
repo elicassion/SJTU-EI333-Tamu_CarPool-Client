@@ -1,13 +1,17 @@
 package com.ultron.tamu_carpool.confirm;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
 import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.InteractUtil;
 
@@ -16,10 +20,23 @@ import org.json.JSONObject;
 public class ConfirmedMatchActivity extends AppCompatActivity implements View.OnClickListener{
     private TextView textView;
     private Button button;
+    private Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            StatusBarCompat.compat(this, 0xFF80CBC4);
         setContentView(R.layout.activity_confirmed_match);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_confirmed_match_toolbar);
+        toolbar.setTitle("拼车成功！");
+        //setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        mContext = this.getApplicationContext();
         initView();
     }
 

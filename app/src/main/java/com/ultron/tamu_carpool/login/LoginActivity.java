@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
+import com.ultron.tamu_carpool.signup.SignUpActivity;
 import com.ultron.tamu_carpool.util.InteractUtil;
 
 
@@ -67,6 +69,8 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            StatusBarCompat.compat(this, 0xFF80CBC4);
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mPhoneNumberView = (AutoCompleteTextView) findViewById(R.id.phone_number);
@@ -102,6 +106,17 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
                         getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 attemptLogin();
+            }
+        });
+
+        Button mSignUpButton = (Button) findViewById(R.id.sign_up_button);
+        mSignUpButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                goSignUp();
             }
         });
 
@@ -167,13 +182,31 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
         }
     }
 
+    private void goSignUp(){
+        String phone_number = mPhoneNumberView.getText().toString();
+        String password = mPasswordView.getText().toString();
+        Intent intentSignUp = new Intent(LoginActivity.this, SignUpActivity.class);
+        intentSignUp.putExtra("phone_number", phone_number);
+        intentSignUp.putExtra("password", password);
+        startActivityForResult(intentSignUp, 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        //TODO:
+        if (resultCode == 1){
+            String phoneNumber = data.getStringExtra("phone_number");
+            String password = data.getStringExtra("password");
+            mAuthTask = new UserLoginTask(phoneNumber, password);
+            mAuthTask.execute((Void) null);
+        }
+    }
+
     private boolean isPhoneNumberValid(String phone_number) {
-        //TODO: Replace this with your own logic
-        return phone_number.length()==11;
+        return phone_number.length() == 11;
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
         return password.length() >= 6;
     }
 
@@ -241,12 +274,6 @@ public class LoginActivity extends AppCompatActivity /*implements LoaderCallback
 
         @Override
         protected Boolean doInBackground(Void... params) {
-//            try {
-//                // Simulate network access.
-//                Thread.sleep(2000);
-//            } catch (InterruptedException e) {
-//                return false;
-//            }
             InteractUtil interactUtil = new InteractUtil();
             int code = interactUtil.checkIDPassword(mPhoneNumber, mPassword);
             if (code == 0) return false;

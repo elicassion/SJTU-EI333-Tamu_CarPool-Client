@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:layout_marginTop="44dp"
     tools:context="com.ultron.tamu_carpool.order.OrderUnitInfoActivity"
     tools:showIn="@layout/activity_order_unit_info"
     android:orientation="vertical">
@@ -25,7 +25,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#000000"
         android:orientation="vertical"
         android:id="@+id/order_unit_go"
         android:gravity="bottom">
@@ -34,7 +33,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="bottom" />
+
+            android:gravity="center"
+            android:background="@color/accent_material_light" />
     </LinearLayout>
 
 

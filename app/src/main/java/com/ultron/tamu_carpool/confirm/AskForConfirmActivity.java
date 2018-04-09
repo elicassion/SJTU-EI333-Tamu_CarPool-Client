@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.ultron.tamu_carpool.R;
+import com.ultron.tamu_carpool.StatusBarCompat;
 import com.ultron.tamu_carpool.usr.User;
 import com.ultron.tamu_carpool.util.InteractUtil;
 
@@ -30,9 +31,11 @@ public class AskForConfirmActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StatusBarCompat.compat(this, 0xFF80CBC4);
         setContentView(R.layout.activity_ask_for_confirm);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_order_unit_info_toolbar);
-        setSupportActionBar(toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.activity_ask_for_confirm_toolbar);
+        toolbar.setTitle("请求确认");
+        //setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,13 +69,13 @@ public class AskForConfirmActivity extends AppCompatActivity implements View.OnC
             String tarStartName = jTarget.getString("start_name");
             String tarEndName = jTarget.getString("dest_name");
             String tarTime = jTarget.getString("time");
-            double reputation = jTarget.getDouble("reputaion");
+            double reputation = jTarget.getDouble("reputation");
             int finishedOrderNumber = jTarget.getInt("finished_order_number");
             text = text + "您的" + myTime + "从" + myStartName + "去往" + myEndName + "请求已匹配到，请确认：\n";
             text = text + "匹配人信息：\n";
             text = text + tarTime + "从" + tarStartName + "去往" + tarEndName + "\n";
             text = text + "联系电话: " + target.getID() + "\n";
-            text = text + "评价: " + Double.toString(reputation) + "\n";
+            text = text + "评价: " + String.format("%.2f", reputation) + "\n";
             text = text + "已完成订单数: " + Integer.toString(finishedOrderNumber) + "\n";
             if (target.getUserType() == 2) {
                 JSONObject carInfo = jTarget.getJSONObject("car_info");

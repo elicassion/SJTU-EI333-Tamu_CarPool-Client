@@ -16,13 +16,12 @@
             android:id="@+id/activity_ask_for_confirm_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="@color/accent_material_light"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:navigationIcon="?attr/homeAsUpIndicator"
             />
 
     </android.support.design.widget.AppBarLayout>
-
     <include layout="@layout/content_ask_for_confirm" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="maintitle">TAMU CAR POOL</string>
+    <string name="maintitle">Tahm Car Pool</string>
     <string name="user_idps_file_name">idps.tm</string>
     <string name="animate">Animate</string>
     <string name="basic_map">基本地图</string>
@@ -16,7 +16,7 @@
     <string name="custom_info_contents">Custom info contents</string>
     <string name="custom_info_window">Custom info window</string>
     <string name="default_info_window">Default info window</string>
-    <string name="demo_title">Tamu Car Pool</string>
+    <string name="demo_title">Tahm Car Pool</string>
     <string name="down_arrow">\u2193</string>
     <string name="drag_melbourne">Drag Melbourne</string>
     <string name="events_demo">Events功能</string>
